@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Analog Photobooth</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-main: #1C1917; 
+    --panel-bg: #292524;
+    --text-main: #D4AF37; 
+    --text-muted: #A89F91;
+    --border-color: #574F44;
+    --accent: #D4AF37;
+    --btn-text: #1C1917;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Courier Prime', monospace;
+    background: var(--bg-main);
+    background-image: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
+    color: var(--text-muted);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  header {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+    width: 100%;
+  }
+
+  header .subtitle {
+    font-family: 'Courier Prime', monospace;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--text-main);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    font-style: italic;
+    text-shadow: 0 2px 10px rgba(212, 175, 55, 0.2);
+  }
+
+  .divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    margin: 1.5rem auto;
+  }
+
+  .app-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1rem 1.5rem 3rem;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    flex: 1 1 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .panel h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--text-main);
+    font-size: 1.3rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+  }
+
+  /* ===== KAMERA & KONTROL ===== */
+  .cam-status { text-align: center; color: var(--text-muted); font-size: 0.9rem; letter-spacing: 1px;}
+  
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    background: #000;
+  }
+
+  /* Efek Vignette (gelap di pinggiran) pada layar kamera */
+  .video-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 70px rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Efek warna Film Analog yang lebih kuat */
+  #camera-video { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    filter: sepia(0.65) contrast(1.25) brightness(0.9) saturate(0.8); 
+  }
+  
+  #countdown-display {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    font-size: 6rem; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--text-main); background: rgba(0,0,0,0.5); z-index: 10;
+  }
+
+  .camera-controls { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+  .cam-btn { padding: 0.8rem 1.2rem; border-radius: 4px; border: 1px solid var(--accent); font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Courier Prime', monospace; text-transform: uppercase; font-size: 0.85rem;}
+  
+  .cam-btn-snap { background: var(--accent); color: var(--btn-text); flex-grow: 1; box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+  .cam-btn-snap:hover { background: #E5C77A; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+  .cam-btn-snap:disabled { background: #574F44; border-color: #574F44; color: #1C1917; cursor: not-allowed; box-shadow: none; }
+  
+  .cam-btn-flip { background: transparent; color: var(--text-main); }
+  .cam-btn-flip:hover { background: rgba(212, 175, 55, 0.1); }
+  
+  /* GRID UPLOAD */
+  .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+  .slot-thumb-wrapper {
+    aspect-ratio: 4/3; border-radius: 4px; border: 1px dashed var(--border-color);
+    position: relative; overflow: hidden; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.2);
+  }
+  .slot-thumb-wrapper.active { border: 2px solid var(--accent); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+  
+  /* Samakan filter untuk thumbnail */
+  .slot-thumb { 
+    width: 100%; height: 100%; object-fit: cover; 
+    filter: sepia(0.65) contrast(1.25) brightness(0.9) saturate(0.8); 
+  }
+  
+  .slot-overlay-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: rgba(212,175,55,0.6); pointer-events: none; text-align: center;}
+  
+  input[type="file"] { display: none; }
+  canvas { display: none; }
+
+  /* ===== PENGATURAN TEMA & LAYOUT ===== */
+  .setting-group { margin-bottom: 0.5rem; }
+  .setting-group label { color: var(--text-main); font-size: 0.75rem; display: block; text-align: center; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px;}
+  
+  .layout-tabs, .timer-tabs { display: flex; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 6px; border: 1px solid var(--border-color); }
+  .tab-btn {
+    flex: 1; text-align: center; padding: 0.6rem; color: var(--text-muted); font-size: 0.85rem;
+    font-weight: 700; cursor: pointer; border-radius: 4px; transition: 0.2s;
+  }
+  .tab-btn.active { background: rgba(212, 175, 55, 0.15); color: var(--text-main); border: 1px solid rgba(212, 175, 55, 0.3); }
+
+  /* ===== PREVIEW AREA ===== */
+  .preview-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; padding: 1rem 0; }
+  .strip-preview {
+    position: relative; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    transition: max-width 0.3s ease;
+    width: 100%;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  
+  .strip-preview.is-strip { max-width: 280px; }
+  .strip-preview.is-landscape { max-width: 100%; }
+  
+  #preview-img { width: 100%; display: block; }
+
+  .btn-download {
+    width: 100%; padding: 1.1rem; background: var(--accent);
+    color: var(--btn-text); border: none; border-radius: 4px; font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+  }
+  .btn-download:hover { background: #E5C77A; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4); }
+  
+  footer { color: var(--border-color); font-size: 0.8rem; text-align: center; padding: 2rem 1rem; letter-spacing: 2px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">35mm Analog Series</div>
+  <h1>Vintage Moments</h1>
+  <div class="divider"></div>
+</header>
+
+<div class="app-container">
+  
+  <div class="panel">
+    <h2>[ Viewfinder ]</h2>
+    <div class="cam-status" id="camStatus">ROLL: 1 OF 3 EXPOSURES</div>
+
+    <div class="video-wrapper">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <div id="countdown-display">3</div>
+    </div>
+    <canvas id="camera-canvas"></canvas>
+
+    <div class="camera-controls">
+      <button class="cam-btn cam-btn-flip" onclick="flipCamera()">FLIP</button>
+      <button class="cam-btn cam-btn-snap" id="btnSnap" onclick="triggerSnap()">CAPTURE</button>
+      <button class="cam-btn cam-btn-flip" id="btnReset" onclick="resetPhotos()" style="display:none; width:100%;">RELOAD FILM</button>
+    </div>
+
+    <div class="setting-group" id="zoomControl" style="display:none; margin-top: 10px;">
+      <label>ZOOM LENS (<span id="zoomValue">1.0</span>x)</label>
+      <input type="range" id="camZoom" step="0.1" value="1" oninput="updateZoom(this.value)" style="width:100%; accent-color: var(--accent);">
+    </div>
+
+    <div class="setting-group" style="margin-top: 10px;">
+      <label>TIMER (SEC)</label>
+      <div class="timer-tabs" id="timerTabs">
+        <div class="tab-btn active" data-time="0" onclick="setTimer(this, 0)">OFF</div>
+        <div class="tab-btn" data-time="3" onclick="setTimer(this, 3)">3</div>
+        <div class="tab-btn" data-time="5" onclick="setTimer(this, 5)">5</div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>DEVELOPED NEGATIVES (UPLOAD)</label>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>[ Darkroom Print ]</h2>
+
+    <div class="setting-group">
+      <label>PRINT FORMAT</label>
+      <div class="layout-tabs">
+        <div class="tab-btn active" onclick="setLayout(this, 'strip')">FILM STRIP</div>
+        <div class="tab-btn" onclick="setLayout(this, 'landscape')">GRID PRINT</div>
+      </div>
+    </div>
+
+    <div class="preview-wrapper">
+      <div class="strip-preview is-strip" id="previewContainer">
+        <img id="preview-img" src="">
+      </div>
+    </div>
+
+    <button class="btn-download" onclick="downloadStrip()">Develop & Save Photo</button>
+  </div>
+
+</div>
+<canvas id="strip-canvas"></canvas>
+
+<footer>© 2026 · VINTAGE GOLD EDITION</footer>
+
+<input type="file" id="file0" accept="image/*" onchange="loadPhoto(0,this)">
+<input type="file" id="file1" accept="image/*" onchange="loadPhoto(1,this)">
+<input type="file" id="file2" accept="image/*" onchange="loadPhoto(2,this)">
+
+<script>
+let photos = [null, null, null]; 
+let currentLayout = 'strip'; 
+let currentTimer = 0;
+let cameraStream = null;
+let videoTrack = null; 
+let currentSlot = 0; 
+let facingMode = 'user';
+let isSnapping = false;
+const MAX_PHOTOS = 3; 
+
+window.onload = () => { buildSlots(); renderStrip(); startStream(); updateUI(); };
+
+async function startStream() {
+  if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+  const video = document.getElementById('camera-video');
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+    });
+    video.srcObject = cameraStream;
+
+    video.onloadedmetadata = () => {
+      videoTrack = cameraStream.getVideoTracks()[0];
+      if (videoTrack.getCapabilities) {
+        const capabilities = videoTrack.getCapabilities();
+        const zoomControl = document.getElementById('zoomControl');
+        const zoomSlider = document.getElementById('camZoom');
+        
+        if (capabilities.zoom) {
+          zoomSlider.min = capabilities.zoom.min;
+          zoomSlider.max = capabilities.zoom.max;
+          zoomSlider.step = capabilities.zoom.step || 0.1;
+          zoomSlider.value = videoTrack.getSettings().zoom || 1;
+          document.getElementById('zoomValue').innerText = zoomSlider.value;
+          zoomControl.style.display = 'block'; 
+        } else {
+          zoomControl.style.display = 'none'; 
+        }
+      }
+    };
+  } catch (e) { alert("Akses kamera ditolak. Silakan upload foto secara manual."); }
+}
+
+function updateZoom(value) {
+  if (videoTrack && videoTrack.getCapabilities && videoTrack.getCapabilities().zoom) {
+    videoTrack.applyConstraints({
+      advanced: [{ zoom: parseFloat(value) }]
+    }).catch(e => console.log("Zoom gagal:", e));
+    document.getElementById('zoomValue').innerText = parseFloat(value).toFixed(1);
+  }
+}
+
+function flipCamera() { facingMode = facingMode === 'user' ? 'environment' : 'user'; startStream(); }
+
+function setTimer(el, time) {
+  document.querySelectorAll('#timerTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active'); currentTimer = time;
+}
+
+function setLayout(el, layout) {
+  document.querySelectorAll('.layout-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active'); 
+  currentLayout = layout;
+  
+  const container = document.getElementById('previewContainer');
+  container.className = `strip-preview is-${layout}`;
+  renderStrip();
+}
+
+function triggerSnap() {
+  if(isSnapping || currentSlot >= MAX_PHOTOS) return;
+  const btnSnap = document.getElementById('btnSnap');
+  
+  if (currentTimer === 0) { executeSnap(); } 
+  else {
+    isSnapping = true; btnSnap.disabled = true;
+    let t = currentTimer;
+    let display = document.getElementById('countdown-display');
+    display.style.display = 'flex'; display.innerText = t;
+    
+    let interval = setInterval(() => {
+      t--;
+      if (t > 0) { display.innerText = t; } 
+      else {
+        clearInterval(interval); display.style.display = 'none';
+        executeSnap(); isSnapping = false; btnSnap.disabled = false;
+      }
+    }, 1000);
+  }
+}
+
+function executeSnap() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  
+  if(facingMode === 'user') {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  
+  const img = new Image();
+  img.onload = () => {
+    photos[currentSlot] = img;
+    document.getElementById(`thumb${currentSlot}`).src = dataUrl;
+    renderStrip(); currentSlot++; updateUI();
+  };
+  img.src = dataUrl;
+}
+
+function resetPhotos() {
+  photos = [null, null, null]; currentSlot = 0;
+  for(let i=0; i<MAX_PHOTOS; i++) document.getElementById(`thumb${i}`).src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  updateUI(); renderStrip();
+}
+
+function updateUI() {
+  document.querySelectorAll('.slot-thumb-wrapper').forEach((el, index) => {
+    if(index === currentSlot) el.classList.add('active'); else el.classList.remove('active');
+  });
+  const btnSnap = document.getElementById('btnSnap'), btnReset = document.getElementById('btnReset');
+  if (currentSlot >= MAX_PHOTOS) {
+    document.getElementById('camStatus').textContent = "FILM ROLL FULL. DEVELOPING...";
+    btnSnap.style.display = 'none'; btnReset.style.display = 'block';
+  } else {
+    document.getElementById('camStatus').textContent = `ROLL: ${currentSlot + 1} OF 3 EXPOSURES`;
+    btnSnap.style.display = 'block'; btnReset.style.display = 'none'; btnSnap.disabled = false;
+  }
+}
+
+function buildSlots() {
+  const grid = document.getElementById('slotGrid'); grid.innerHTML = '';
+  for (let i = 0; i < MAX_PHOTOS; i++) {
+    const div = document.createElement('div'); div.className = 'slot-thumb-wrapper';
+    if(i === 0) div.classList.add('active');
+    div.onclick = () => document.getElementById(`file${i}`).click();
+    div.innerHTML = `<img class="slot-thumb" id="thumb${i}" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div class="slot-overlay-text">EXP ${i+1}</div>`;
+    grid.appendChild(div);
+  }
+}
+
+function loadPhoto(index, input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      photos[index] = img; document.getElementById(`thumb${index}`).src = e.target.result;
+      renderStrip();
+      if(index === currentSlot && currentSlot < MAX_PHOTOS) { currentSlot++; updateUI(); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// FUNGSI RENDER VINTAGE GOLD (3 FOTO + EFEK KAMERA JADUL)
+function renderStrip() {
+  const canvas = document.getElementById('strip-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const bgC = "#151412"; 
+  const gold = "#D4AF37"; 
+  const textC = "#E0D5C1"; 
+  
+  // Efek filter warna untuk digambar ke kanvas
+  const vintageFilter = "sepia(0.65) contrast(1.25) brightness(0.9) saturate(0.8)";
+  
+  if (currentLayout === 'strip') {
+    const W = 480, HEAD_H = 140, FOOT_H = 120, GAP = 25;
+    const P_W = W - 60, P_H = P_W * 0.75; 
+    const TOTAL_H = HEAD_H + 3 * (P_H + GAP) + GAP + FOOT_H - 10;
+    canvas.width = W; canvas.height = TOTAL_H;
+    
+    ctx.fillStyle = bgC; ctx.fillRect(0, 0, W, TOTAL_H);
+    ctx.strokeStyle = gold; ctx.lineWidth = 1.5; ctx.strokeRect(12, 12, W-24, TOTAL_H-24);
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.3)"; ctx.lineWidth = 1; ctx.strokeRect(16, 16, W-32, TOTAL_H-32);
+
+    ctx.textAlign = 'center'; 
+    ctx.fillStyle = gold;
+    ctx.font = "italic bold 36px 'Playfair Display', serif"; 
+    ctx.fillText("Analog Moments", W/2, HEAD_H/2 + 15);
+    ctx.font = "14px 'Courier Prime', monospace"; 
+    ctx.letterSpacing = "6px"; 
+    ctx.fillStyle = textC;
+    ctx.fillText("35MM ISO 400", W/2, HEAD_H/2 + 45);
+
+    for (let i = 0; i < 3; i++) {
+      const px = 30, py = HEAD_H + GAP + i*(P_H + GAP);
+      ctx.fillStyle = "#0A0A0A"; ctx.fillRect(px, py, P_W, P_H);
+      
+      if(photos[i]){
+        const scale = Math.max(P_W/photos[i].width, P_H/photos[i].height);
+        const sw = photos[i].width*scale, sh = photos[i].height*scale;
+        
+        ctx.save(); 
+        ctx.beginPath(); ctx.rect(px, py, P_W, P_H); ctx.clip();
+        
+        // 1. Terapkan filter warna vintage
+        ctx.filter = vintageFilter;
+        ctx.drawImage(photos[i], px-(sw-P_W)/2, py-(sh-P_H)/2, sw, sh); 
+        ctx.filter = "none"; // Kembalikan filter ke normal
+        
+        // 2. Terapkan bayangan Vignette melingkar
+        const grad = ctx.createRadialGradient(px + P_W/2, py + P_H/2, P_H/3, px + P_W/2, py + P_H/2, P_H);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.7)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(px, py, P_W, P_H);
+        
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#222"; ctx.font = "18px 'Courier Prime', monospace"; 
+        ctx.fillStyle = "#555"; ctx.fillText(`[ EXP ${i+1} ]`, px+P_W/2, py+P_H/2 + 6);
+      }
+      ctx.strokeStyle = gold; ctx.lineWidth = 2; ctx.strokeRect(px, py, P_W, P_H);
+    }
+    
+    const footerY = TOTAL_H - FOOT_H;
+    ctx.beginPath(); ctx.moveTo(W/2 - 50, footerY + 20); ctx.lineTo(W/2 + 50, footerY + 20); 
+    ctx.strokeStyle = gold; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = gold; ctx.font = "italic 22px 'Playfair Display', serif"; 
+    ctx.fillText("Vintage Gold Edition", W/2, footerY + 60);
+    ctx.font = "12px 'Courier Prime', monospace"; ctx.letterSpacing = "3px"; ctx.fillStyle = textC;
+    ctx.fillText("EST. 1998", W/2, footerY + 85);
+    
+  } else {
+    // FORMAT LANDSCAPE
+    const W = 1100, H = 900; 
+    canvas.width = W; canvas.height = H;
+    
+    ctx.fillStyle = bgC; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = gold; ctx.lineWidth = 2; ctx.strokeRect(20, 20, W-40, H-40);
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.3)"; ctx.lineWidth = 1; ctx.strokeRect(26, 26, W-52, H-52);
+    
+    const gap = 30, pW = 460, pH = pW * 0.75; 
+    const totalGridW = (pW * 2) + gap, totalGridH = (pH * 2) + gap;
+    const startX = (W - totalGridW) / 2, startY = (H - totalGridH) / 2; 
+
+    for(let i=0; i<4; i++){
+      const col = i % 2, row = Math.floor(i / 2);
+      const px = startX + col * (pW + gap), py = startY + row * (pH + gap);
+      
+      if (i < 3) {
+        ctx.fillStyle = "#0A0A0A"; ctx.fillRect(px, py, pW, pH);
+        if(photos[i]){
+          const scale = Math.max(pW/photos[i].width, pH/photos[i].height);
+          const sw = photos[i].width*scale, sh = photos[i].height*scale;
+          
+          ctx.save(); 
+          ctx.beginPath(); ctx.rect(px, py, pW, pH); ctx.clip();
+          
+          // 1. Terapkan filter warna vintage
+          ctx.filter = vintageFilter;
+          ctx.drawImage(photos[i], px-(sw-pW)/2, py-(sh-pH)/2, sw, sh); 
+          ctx.filter = "none";
+          
+          // 2. Terapkan bayangan Vignette melingkar
+          const grad = ctx.createRadialGradient(px + pW/2, py + pH/2, pH/3, px + pW/2, py + pH/2, pH);
+          grad.addColorStop(0, 'rgba(0,0,0,0)');
+          grad.addColorStop(1, 'rgba(0,0,0,0.7)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(px, py, pW, pH);
+          
+          ctx.restore();
+        } else {
+          ctx.fillStyle = "#222"; ctx.font = "20px 'Courier Prime', monospace"; 
+          ctx.fillStyle = "#555"; ctx.fillText(`[ EXP ${i+1} ]`, px+pW/2, py+pH/2 + 6);
+        }
+        ctx.strokeStyle = gold; ctx.lineWidth = 2; ctx.strokeRect(px, py, pW, pH);
+      } 
+      else {
+        ctx.strokeStyle = "rgba(212, 175, 55, 0.2)"; ctx.lineWidth = 1; 
+        ctx.strokeRect(px + 10, py + 10, pW - 20, pH - 20);
+        ctx.textAlign = 'center'; ctx.fillStyle = gold;
+        ctx.font = "italic bold 42px 'Playfair Display', serif"; 
+        ctx.fillText("Analog Moments", px + pW/2, py + pH/2 - 15);
+        ctx.fillStyle = textC; ctx.font = "16px 'Courier Prime', monospace"; ctx.letterSpacing = "6px";
+        ctx.fillText("35MM ISO 400 FILM", px + pW/2, py + pH/2 + 25);
+        ctx.beginPath(); ctx.moveTo(px + pW/2 - 60, py + pH/2 + 55); ctx.lineTo(px + pW/2 + 60, py + pH/2 + 55); 
+        ctx.strokeStyle = gold; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = gold; ctx.font = "14px 'Courier Prime', monospace"; ctx.letterSpacing = "3px";
+        ctx.fillText("EST. 1998", px + pW/2, py + pH/2 + 85);
+      }
+    }
+  }
+
+  document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.9);
+}
+
+function downloadStrip() {
+  const link = document.createElement('a');
+  link.download = `Vintage_Film_${currentLayout}.jpg`;
+  link.href = document.getElementById('strip-canvas').toDataURL('image/jpeg', 1.0);
+  link.click();
+}
+</script>
+</body>
+</html>

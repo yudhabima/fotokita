@@ -3,506 +3,1204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FotoKita - Idul Fitri</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Amiri:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<title>FotoKita — Abadikan Momentmu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #C9A84C;
-    --gold-light: #F0D080;
-    --gold-dark: #8B6914;
-    --cream: #FDF6E3;
-    --green-dark: #1A3A2A;
-    --green-mid: #2D6A4F;
-    --green-light: #74C69D;
-    --white: #FFFFFF;
+    --cream: #FAF6F0;
+    --warm-white: #FFFDF9;
+    --brown-dark: #2C1A0E;
+    --brown-mid: #6B3F1F;
+    --brown-light: #B5784A;
+    --gold: #D4A853;
+    --gold-light: #F0CB7A;
+    --pink-soft: #F5D9C8;
+    --green-film: #3D5A40;
+    --charcoal: #1C1C1C;
+    --shadow: rgba(44, 26, 14, 0.15);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
-    font-family: 'Poppins', sans-serif;
-    background: var(--green-dark);
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--brown-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(250, 246, 240, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(180, 120, 74, 0.15);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--brown-dark);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--gold); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--brown-mid);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: var(--brown-dark);
+    color: var(--cream) !important;
+    padding: 10px 24px;
+    border-radius: 50px;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--brown-mid) !important; color: var(--cream) !important; }
+
+  /* ── HERO ── */
+  .hero {
     min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 100px 48px 60px;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 168, 83, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text { position: relative; z-index: 2; }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 36px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    line-height: 1.05;
+    font-weight: 900;
+    color: var(--brown-dark);
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--brown-light);
+  }
+
+  .hero-desc {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--brown-mid);
+    max-width: 440px;
+    margin-bottom: 44px;
+    font-weight: 300;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--brown-dark);
+    color: var(--cream);
+    padding: 16px 36px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 30px rgba(44, 26, 14, 0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(44, 26, 14, 0.3); }
+
+  .btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--brown-dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+  .btn-secondary:hover { gap: 14px; }
+  .btn-secondary .arrow {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--brown-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+
+  /* ── HERO POLAROID STACK ── */
+  .hero-visual {
+    position: relative;
+    height: 520px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .polaroid {
+    position: absolute;
+    background: white;
+    padding: 14px 14px 50px;
+    box-shadow: 0 20px 60px rgba(44,26,14,0.18), 0 4px 12px rgba(44,26,14,0.08);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+  }
+  .polaroid:hover { z-index: 10; }
+
+  .polaroid-1 { width: 260px; top: 20px; left: 80px; transform: rotate(-6deg); }
+  .polaroid-2 { width: 280px; top: 80px; left: 200px; transform: rotate(4deg); z-index: 3; }
+  .polaroid-3 { width: 240px; top: 200px; left: 40px; transform: rotate(2deg); z-index: 2; }
+  .polaroid-4 { width: 220px; top: 260px; left: 240px; transform: rotate(-3deg); z-index: 4; }
+
+  .polaroid:hover { transform: rotate(0deg) scale(1.04) !important; }
+
+  .polaroid-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: var(--pink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .polaroid-caption {
+    text-align: center;
+    margin-top: 8px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: #888;
+  }
+
+  /* Fake photo content using CSS art */
+  .photo-scene {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    position: relative;
+  }
+  .photo-scene.beach { background: linear-gradient(180deg, #87CEEB 50%, #F4D03F 50%); }
+  .photo-scene.family { background: linear-gradient(135deg, #d4a0a0 0%, #f0c8b0 100%); }
+  .photo-scene.birthday { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+  .photo-scene.wedding { background: linear-gradient(135deg, #fdfcfb 0%, #f2f2f2 100%); }
+
+  /* ── FLOATING BADGE ── */
+  .badge-float {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    background: var(--brown-dark);
+    color: var(--cream);
+    border-radius: 50%;
+    width: 110px; height: 110px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1.3;
+    z-index: 20;
+    animation: spin 20s linear infinite;
+    cursor: default;
+  }
+  .badge-float .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold-light);
+    display: block;
+    line-height: 1;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    background: var(--brown-dark);
+    padding: 28px 48px;
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    align-items: center;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: rgba(250,246,240,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .section-eyebrow::before {
+    content: '';
+    width: 28px; height: 1px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--brown-dark);
+    margin-bottom: 18px;
+  }
+  .section-title em { font-style: italic; color: var(--brown-light); }
+  .section-desc {
+    font-size: 1rem;
+    color: var(--brown-mid);
+    line-height: 1.7;
+    font-weight: 300;
+    max-width: 480px;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-it-works {
+    padding: 100px 48px;
+    background: var(--warm-white);
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-top: 60px;
+    position: relative;
+  }
+  .steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: calc(12.5% + 24px);
+    right: calc(12.5% + 24px);
+    height: 1px;
+    background: repeating-linear-gradient(to right, var(--gold) 0, var(--gold) 8px, transparent 8px, transparent 18px);
+  }
+
+  .step-card {
+    text-align: center;
+    padding: 24px 16px;
+  }
+  .step-num {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1.5px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin: 0 auto 20px;
+    position: relative;
+    z-index: 2;
+  }
+  .step-icon { font-size: 1.8rem; display: block; margin-bottom: 12px; }
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .step-text { font-size: 0.88rem; color: var(--brown-mid); line-height: 1.6; }
+
+  /* ── FRAME PICKER ── */
+  .frame-section {
+    padding: 100px 48px;
+    background: var(--cream);
+  }
+
+  .frame-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 52px;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+  }
+  .filter-tab {
+    padding: 9px 22px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(107, 63, 31, 0.2);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--brown-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-tab.active,
+  .filter-tab:hover {
+    background: var(--brown-dark);
+    color: var(--cream);
+    border-color: var(--brown-dark);
+  }
+
+  /* Frame cards grid */
+  .frames-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .frame-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    box-shadow: 0 4px 20px var(--shadow);
+    position: relative;
+  }
+  .frame-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(44,26,14,0.2);
+  }
+  .frame-card.selected::after {
+    content: '✓ Dipilih';
+    position: absolute;
+    top: 16px; right: 16px;
+    background: var(--green-film);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 50px;
+  }
+
+  .frame-preview {
+    width: 100%;
+    padding: 24px;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* The actual photoboat frame designs */
+  .photoboat {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 3/4;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
-    background-image: 
-      radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 90%, rgba(201,168,76,0.1) 0%, transparent 50%);
+    gap: 4px;
+    padding: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.15);
   }
 
-  header {
-    text-align: center;
-    padding: 2rem 1rem 1rem;
+  .pb-strip {
     width: 100%;
-  }
-
-  header .arabic {
-    font-family: 'Amiri', serif;
-    color: var(--gold);
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    text-shadow: 0 0 20px rgba(201,168,76,0.4);
-  }
-
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    color: var(--cream);
-    font-size: clamp(1.2rem, 3vw, 2rem);
-    text-transform: uppercase;
-    margin-top: 0.3rem;
-  }
-
-  .divider {
-    width: 150px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 0.8rem auto;
-  }
-
-  .app-container {
+    flex: 1;
+    background: rgba(0,0,0,0.08);
+    border-radius: 4px;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2rem;
+    align-items: center;
     justify-content: center;
-    align-items: flex-start;
-    padding: 1rem 1.5rem 3rem;
-    width: 100%;
-    max-width: 1200px;
-  }
-
-  .panel {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 16px;
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-    flex: 1 1 400px;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
-
-  .panel h2 {
-    font-family: 'Playfair Display', serif;
-    color: var(--gold);
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(201,168,76,0.2);
-    padding-bottom: 0.7rem;
-    text-align: center;
-  }
-
-  /* ===== KAMERA & KONTROL ===== */
-  .cam-status { text-align: center; color: var(--cream); font-weight: 600; }
-  
-  .video-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4/3;
-    border-radius: 12px;
+    font-size: 1.4rem;
+    color: rgba(0,0,0,0.2);
     overflow: hidden;
-    border: 2px solid rgba(201,168,76,0.3);
-    background: #000;
+    position: relative;
   }
 
-  #camera-video { width: 100%; height: 100%; object-fit: cover; }
-  
-  #countdown-display {
-    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
-    font-size: 6rem; font-weight: 700; color: white; background: rgba(0,0,0,0.4); z-index: 10;
-  }
-
-  .camera-controls { display: flex; gap: 0.7rem; flex-wrap: wrap; justify-content: center; }
-  .cam-btn { padding: 0.8rem 1.2rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
-  .cam-btn-snap { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--green-dark); flex-grow: 1; font-size: 1rem; border-radius: 50px; }
-  .cam-btn-snap:hover { transform: scale(1.03); }
-  .cam-btn-snap:disabled { filter: grayscale(1); opacity: 0.6; }
-  .cam-btn-flip { background: rgba(255,255,255,0.1); color: var(--cream); }
-  
-  /* GRID UPLOAD */
-  .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
-  .slot-thumb-wrapper {
-    aspect-ratio: 4/3; border-radius: 8px; border: 1.5px dashed rgba(201,168,76,0.4);
-    position: relative; overflow: hidden; cursor: pointer;
-  }
-  .slot-thumb-wrapper.active { border-color: var(--gold); border-style: solid; box-shadow: 0 0 10px rgba(201,168,76,0.3); }
-  .slot-thumb { width: 100%; height: 100%; object-fit: cover; }
-  .slot-overlay-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: rgba(255,255,255,0.6); pointer-events: none; text-align: center;}
-  
-  input[type="file"] { display: none; }
-  canvas { display: none; }
-
-  /* ===== PENGATURAN TEMA & LAYOUT ===== */
-  .setting-group { margin-bottom: 0.5rem; }
-  .setting-group label { color: var(--gold-light); font-size: 0.78rem; display: block; text-align: center; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;}
-  
-  .layout-tabs, .timer-tabs { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px; }
-  .tab-btn {
-    flex: 1; text-align: center; padding: 0.5rem; color: rgba(255,255,255,0.5); font-size: 0.8rem;
-    font-weight: 600; cursor: pointer; border-radius: 7px; transition: 0.2s;
-  }
-  .tab-btn.active { background: rgba(201,168,76,0.2); color: var(--gold); }
-  
-  .frame-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
-  .frame-opt {
-    aspect-ratio: 2/1; border-radius: 8px; border: 2px solid rgba(201,168,76,0.2); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--cream); font-weight: 600; transition: 0.2s;
-  }
-  .frame-opt.active { border-color: var(--gold); background: rgba(201,168,76,0.15); color: var(--gold); }
-
-  /* ===== PREVIEW AREA ===== */
-  .preview-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; }
-  .strip-preview {
-    position: relative; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 40px rgba(0,0,0,0.6);
-    transition: max-width 0.3s ease;
+  .pb-footer {
     width: 100%;
+    text-align: center;
+    padding: 8px 4px 4px;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
   }
-  
-  /* Animasi Transisi Layout Preview */
-  .strip-preview.is-strip { max-width: 280px; }
-  .strip-preview.is-landscape { max-width: 100%; }
-  
-  #preview-img { width: 100%; display: block; border-radius: 12px; }
 
-  .btn-download {
-    width: 100%; padding: 0.9rem; background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-    color: var(--green-dark); border: none; border-radius: 12px; font-family: 'Playfair Display', serif;
-    font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.3); transition: 0.2s;
+  /* Frame styles */
+  .frame-classic { background: white; border: 8px solid white; }
+  .frame-classic .pb-footer { color: #888; }
+
+  .frame-vintage { background: #F5EDD6; border: 8px solid #E8D4A0; }
+  .frame-vintage .pb-footer { color: #8B6914; font-family: 'Playfair Display', serif; font-style: italic; }
+
+  .frame-dark { background: #1A1A1A; border: 8px solid #333; }
+  .frame-dark .pb-footer { color: #D4A853; font-family: 'Playfair Display', serif; }
+  .frame-dark .pb-strip { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.15); }
+
+  .frame-pink { background: #FDE8E8; border: 8px solid #F9BFBF; }
+  .frame-pink .pb-footer { color: #C1627A; }
+
+  .frame-botanical { background: #E8F0E2; border: 8px solid #9BBF90; }
+  .frame-botanical .pb-footer { color: #3D5A40; }
+
+  .frame-gradient {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 8px solid #764ba2;
   }
-  .btn-download:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.5); }
-  
-  footer { color: rgba(255,255,255,0.3); font-size: 0.75rem; text-align: center; padding: 1rem; }
+  .frame-gradient .pb-strip { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); }
+  .frame-gradient .pb-footer { color: white; }
+
+  /* Strip count variants */
+  .pb-2 .pb-strip { }
+  .pb-3 { gap: 3px; }
+  .pb-4 { gap: 2px; padding: 8px; }
+
+  .frame-info {
+    padding: 20px 22px 22px;
+  }
+  .frame-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .frame-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .frame-tag {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    background: var(--pink-soft);
+    color: var(--brown-mid);
+  }
+  .frame-tag.popular { background: var(--brown-dark); color: var(--cream); }
+  .frame-tag.new { background: var(--green-film); color: white; }
+
+  .frame-strips {
+    font-size: 0.8rem;
+    color: var(--brown-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-select {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--brown-dark);
+    background: transparent;
+    color: var(--brown-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-select:hover,
+  .frame-card.selected .btn-select {
+    background: var(--brown-dark);
+    color: var(--cream);
+  }
+
+  /* ── SELECTED SUMMARY ── */
+  .selection-bar {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--brown-dark);
+    color: var(--cream);
+    padding: 18px 32px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 20px 50px rgba(44,26,14,0.4);
+    z-index: 200;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+  .selection-bar.visible { transform: translateX(-50%) translateY(0); }
+  .sel-label { font-size: 0.9rem; opacity: 0.7; }
+  .sel-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--gold-light); }
+  .sel-btn {
+    background: var(--gold);
+    color: var(--brown-dark);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sel-btn:hover { background: var(--gold-light); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials {
+    padding: 100px 48px;
+    background: var(--brown-dark);
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonials::before {
+    content: '"';
+    position: absolute;
+    top: -60px; right: 80px;
+    font-family: 'Playfair Display', serif;
+    font-size: 400px;
+    font-weight: 900;
+    color: rgba(212, 168, 83, 0.06);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .testimonials .section-eyebrow { color: var(--gold-light); }
+  .testimonials .section-title { color: var(--cream); }
+
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 52px;
+  }
+  .testi-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(212, 168, 83, 0.15);
+    border-radius: 20px;
+    padding: 28px;
+  }
+  .testi-stars { color: var(--gold); font-size: 0.9rem; margin-bottom: 14px; }
+  .testi-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: rgba(250,246,240,0.75);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--brown-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .testi-name { font-weight: 500; color: var(--cream); font-size: 0.9rem; }
+  .testi-loc { font-size: 0.77rem; color: rgba(250,246,240,0.45); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    padding: 100px 48px;
+    text-align: center;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section .section-eyebrow { justify-content: center; }
+  .cta-section .section-title { text-align: center; }
+  .cta-section .section-desc { margin: 0 auto 44px; text-align: center; }
+  .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    padding: 52px 48px 32px;
+    color: rgba(250,246,240,0.5);
+  }
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .footer-brand .logo { color: var(--cream); }
+  .footer-brand p {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-top: 12px;
+    max-width: 260px;
+  }
+  .footer-col h4 {
+    color: var(--cream);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 10px; }
+  .footer-col ul a {
+    color: rgba(250,246,240,0.5);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: var(--gold); }
+  .footer-bottom {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .footer-bottom a { color: var(--gold); text-decoration: none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 18px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 90px 24px 60px; }
+    .hero-visual { height: 320px; }
+    .polaroid-1 { width: 160px; top: 10px; left: 20px; }
+    .polaroid-2 { width: 180px; top: 40px; left: 120px; }
+    .polaroid-3 { width: 150px; top: 130px; left: 10px; }
+    .polaroid-4 { width: 140px; top: 160px; left: 160px; }
+    .stats { gap: 40px; flex-wrap: wrap; padding: 28px 24px; }
+    .how-it-works, .frame-section, .testimonials, .cta-section { padding: 70px 24px; }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); }
+    .steps-grid::before { display: none; }
+    .frames-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .frame-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    footer { padding: 40px 24px 24px; }
+    .footer-top { flex-direction: column; }
+  }
+  @media (max-width: 500px) {
+    .frames-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 2.6rem; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="arabic">عيد الفطر المبارك</div>
-  <div class="divider"></div>
-  <h1>Idul Fitri 1447 H</h1>
-</header>
+<!-- NAV -->
+<nav>
+  <div class="logo">Foto<span>Kita</span></div>
+  <ul class="nav-links">
+    <li><a href="#how">Cara Kerja</a></li>
+    <li><a href="#frames">Pilih Frame</a></li>
+    <li><a href="#testi">Ulasan</a></li>
+    <li><a href="#cta" class="nav-cta">Mulai Sekarang</a></li>
+  </ul>
+</nav>
 
-<div class="app-container">
-  
-  <div class="panel">
-    <h2>Photobooth</h2>
-    <div class="cam-status" id="camStatus">📸 Ambil Foto (1/4)</div>
-
-    <div class="video-wrapper">
-      <video id="camera-video" autoplay playsinline muted></video>
-      <div id="countdown-display">3</div>
-    </div>
-    <canvas id="camera-canvas"></canvas>
-
-    <div class="camera-controls">
-      <button class="cam-btn cam-btn-flip" onclick="flipCamera()">🔄 Balik</button>
-      <button class="cam-btn cam-btn-snap" id="btnSnap" onclick="triggerSnap()">📸 Jepret Foto</button>
-      <button class="cam-btn cam-btn-flip" id="btnReset" onclick="resetPhotos()" style="display:none; width:100%;">🔄 Ulangi dari Awal</button>
-    </div>
-
-    <div class="setting-group">
-      <label>Timer Jepret</label>
-      <div class="timer-tabs" id="timerTabs">
-        <div class="tab-btn active" data-time="0" onclick="setTimer(this, 0)">Off</div>
-        <div class="tab-btn" data-time="3" onclick="setTimer(this, 3)">3s</div>
-        <div class="tab-btn" data-time="5" onclick="setTimer(this, 5)">5s</div>
-      </div>
-    </div>
-
-    <div class="setting-group">
-      <label>Atau Upload Manual (Klik Kotak)</label>
-      <div class="slot-grid" id="slotGrid"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Photoboat Experience</div>
+    <h1 class="hero-title">
+      Abadikan<br>Moment<br><em>Bersamamu</em>
+    </h1>
+    <p class="hero-desc">
+      FotoKita hadir dengan Photoboat interaktif — Pilih frame favoritmu, dan simpan kenangan yang tak terlupakan.
+    </p>
+    <div class="hero-actions">
+      <a href="#frames" class="btn-primary">Pilih Frame Sekarang</a>
+      <a href="#how" class="btn-secondary">
+        <span class="arrow">→</span>
+        Lihat Cara Kerja
+      </a>
     </div>
   </div>
 
-  <div class="panel">
-    <h2>Hasil Foto</h2>
-
-    <div class="setting-group">
-      <label>Pilih Format Bingkai</label>
-      <div class="layout-tabs">
-        <div class="tab-btn active" onclick="setLayout(this, 'strip')">⬇️ Memanjang (Strip)</div>
-        <div class="tab-btn" onclick="setLayout(this, 'landscape')">➡️ Menyamping (Landscape)</div>
-      </div>
+  <div class="hero-visual">
+    <!-- Polaroid stack -->
+    <div class="polaroid polaroid-1">
+      <div class="polaroid-img"><div class="photo-scene beach">🌅</div></div>
+      <div class="polaroid-caption">Pantai Bersama</div>
     </div>
-
-    <div class="setting-group">
-      <label>Pilih Tema Warna</label>
-      <div class="frame-grid" id="frameGrid">
-        <div class="frame-opt active" onclick="setTheme(this,'classic')">Classic Gold</div>
-        <div class="frame-opt" onclick="setTheme(this,'floral')">Floral Green</div>
-        <div class="frame-opt" onclick="setTheme(this,'moonstar')">Moon & Star</div>
-        <div class="frame-opt" onclick="setTheme(this,'modern')">Modern Teal</div>
-        <div class="frame-opt" onclick="setTheme(this,'pastel')">Pastel Mint</div>
-        <div class="frame-opt" onclick="setTheme(this,'dark')">Dark Luxe</div>
-      </div>
+    <div class="polaroid polaroid-2">
+      <div class="polaroid-img"><div class="photo-scene family">🥳</div></div>
+      <div class="polaroid-caption">Ulang Tahun</div>
     </div>
-
-    <div class="preview-wrapper">
-      <div class="strip-preview is-strip" id="previewContainer">
-        <img id="preview-img" src="">
-      </div>
+    <div class="polaroid polaroid-3">
+      <div class="polaroid-img"><div class="photo-scene birthday">🎉</div></div>
+      <div class="polaroid-caption">Perayaan</div>
     </div>
-
-    <button class="btn-download" onclick="downloadStrip()">⬇ Download Hasil Foto</button>
+    <div class="polaroid polaroid-4">
+      <div class="polaroid-img"><div class="photo-scene wedding">💍</div></div>
+      <div class="polaroid-caption">Pernikahan</div>
+    </div>
   </div>
+</section>
 
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><span class="stat-num">FotoKita - Abadikan Momen Dalam 1 Bingkai </span></div>
 </div>
-<canvas id="strip-canvas"></canvas>
 
-<footer>Minal 'Aidin wal-Fa'izin · Mohon Maaf Lahir & Batin</footer>
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="reveal">
+      <div class="section-eyebrow">Cara Kerja</div>
+      <h2 class="section-title">Semudah <em>4 Langkah</em></h2>
+      <p class="section-desc">Dari pilih frame hingga foto di tangan, prosesnya cepat dan menyenangkan!</p>
+    </div>
 
-<input type="file" id="file0" accept="image/*" onchange="loadPhoto(0,this)">
-<input type="file" id="file1" accept="image/*" onchange="loadPhoto(1,this)">
-<input type="file" id="file2" accept="image/*" onchange="loadPhoto(2,this)">
-<input type="file" id="file3" accept="image/*" onchange="loadPhoto(3,this)">
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <span class="step-icon">🖼️</span>
+        <div class="step-title">Pilih Frame</div>
+        <p class="step-text">Jelajahi koleksi frame photoboat kami — dari klasik, vintage, hingga lucu dan kekinian.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <span class="step-icon">📸</span>
+        <div class="step-title">Masuk Photoboat</div>
+        <p class="step-text">Duduk, berpose, dan biarkan kamera kami menangkap momen terbaikmu secara otomatis.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <span class="step-icon">✨</span>
+        <div class="step-title">Preview & Koreksi</div>
+        <p class="step-text">Lihat hasilnya di layar, pilih foto strip favorit, dan ubah sebelum cetak jika perlu.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <span class="step-icon">🖨️</span>
+        <div class="step-title">Simpan</div>
+        <p class="step-text">Foto strip langsung tersimpan dalam hitungan detik!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRAME PICKER -->
+<section class="frame-section" id="frames">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="frame-header reveal">
+      <div>
+        <div class="section-eyebrow">Koleksi Frame</div>
+        <h2 class="section-title">Pilih <em>Frame</em> Favoritmu</h2>
+        <p class="section-desc">Setiap frame dirancang untuk melengkapi momen spesialmu.</p>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterFrames('semua', this)">Semua</button>
+        <button class="filter-tab" onclick="filterFrames('romantis', this)">Romantis</button>
+        <button class="filter-tab" onclick="filterFrames('lucu', this)">Lucu</button>
+        <button class="filter-tab" onclick="filterFrames('elegan', this)">Elegan</button>
+      </div>
+    </div>
+
+    <div class="frames-grid" id="framesGrid">
+
+      <!-- CLASSIC WHITE -->
+      <div class="frame-card reveal" data-cat="elegan" onclick="selectFrame(this, 'Classic White')">
+        <div class="frame-preview" style="background: #F7F7F7;">
+          <div class="photoboat pb-4 frame-classic">
+            <div class="pb-strip">🌸</div>
+            <div class="pb-strip">🌿</div>
+            <div class="pb-strip">☀️</div>
+            <div class="pb-strip">🌊</div>
+            <div class="pb-footer">FotoKita</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Classic White</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Bersih, timeless, cocok untuk semua acara</div>
+          <div class="frame-meta">
+            <span class="frame-tag popular">⭐ Terpopuler</span>
+            <span class="frame-strips">📷 4 Strip</span>
+          </div>
+          <a href="classic.html">
+          <button class="btn-select">Pilih Frame Ini</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- VINTAGE GOLD -->
+      <div class="frame-card reveal" data-cat="elegan" onclick="selectFrame(this, 'Vintage Gold')">
+        <div class="frame-preview" style="background: #F5EFD8;">
+          <div class="photoboat pb-3 frame-vintage">
+            <div class="pb-strip">🌾</div>
+            <div class="pb-strip">🍂</div>
+            <div class="pb-strip">🕯️</div>
+            <div class="pb-footer" style="font-family: 'Playfair Display', serif; font-style: italic;">FotoKita</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Vintage Gold</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Nuansa hangat bernuansa film analog klasik</div>
+          <div class="frame-meta">
+            <span class="frame-tag">Elegan</span>
+            <span class="frame-strips">📷 3 Strip</span>
+          </div>
+          <a href="vintage.html">
+          <button class="btn-select">Pilih Frame Ini</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- MIDNIGHT NOIR -->
+      <div class="frame-card reveal" data-cat="elegan" onclick="selectFrame(this, 'Midnight Noir')">
+        <div class="frame-preview" style="background: #111;">
+          <div class="photoboat pb-4 frame-dark">
+            <div class="pb-strip">🌙</div>
+            <div class="pb-strip">✨</div>
+            <div class="pb-strip">🌃</div>
+            <div class="pb-strip">🖤</div>
+            <div class="pb-footer">FotoKita</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Idul Fitri</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Dramatis dan penuh aura malam yang elegan</div>
+          <div class="frame-meta">
+            <span class="frame-tag new">✦ Baru</span>
+            <span class="frame-strips">📷 4 Strip</span>
+          </div>
+          <a href="lebaran.html">
+          <button class="btn-select">Pilih Frame Ini</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- ROSE BLOOM -->
+      <div class="frame-card reveal" data-cat="romantis" onclick="selectFrame(this, 'Rose Bloom')">
+        <div class="frame-preview" style="background: #FDE8E8;">
+          <div class="photoboat pb-3 frame-pink">
+            <div class="pb-strip">🌹</div>
+            <div class="pb-strip">💕</div>
+            <div class="pb-strip">🌷</div>
+            <div class="pb-footer">FotoKita ♡</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Rose Bloom</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Manis dan romantis untuk pasangan & couple</div>
+          <div class="frame-meta">
+            <span class="frame-tag" style="background:#F9D7E3;">💕 Romantis</span>
+            <span class="frame-strips">📷 3 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+      <!-- BOTANICAL GREEN -->
+      <div class="frame-card reveal" data-cat="lucu" onclick="selectFrame(this, 'Botanical Green')">
+        <div class="frame-preview" style="background: #E4EFE1;">
+          <div class="photoboat pb-4 frame-botanical">
+            <div class="pb-strip">🌿</div>
+            <div class="pb-strip">🌱</div>
+            <div class="pb-strip">🌺</div>
+            <div class="pb-strip">🍃</div>
+            <div class="pb-footer">FotoKita</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Botanical Green</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Segar dan natural, cocok untuk outdoor event</div>
+          <div class="frame-meta">
+            <span class="frame-tag new">✦ Baru</span>
+            <span class="frame-strips">📷 4 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+      <!-- GALAXY DREAM -->
+      <div class="frame-card reveal" data-cat="lucu" onclick="selectFrame(this, 'Galaxy Dream')">
+        <div class="frame-preview" style="background: linear-gradient(135deg,#1a1a3e,#2d1b69);">
+          <div class="photoboat pb-3 frame-gradient">
+            <div class="pb-strip">🌌</div>
+            <div class="pb-strip">⭐</div>
+            <div class="pb-strip">🚀</div>
+            <div class="pb-footer">FotoKita ✦</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Galaxy Dream</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Penuh warna dan serasa di antara bintang-bintang</div>
+          <div class="frame-meta">
+            <span class="frame-tag" style="background: linear-gradient(135deg,#667eea,#764ba2); color:white;">🌌 Unik</span>
+            <span class="frame-strips">📷 3 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+      <!-- PASTEL DREAM -->
+      <div class="frame-card reveal" data-cat="lucu romantis" onclick="selectFrame(this, 'Pastel Dream')">
+        <div class="frame-preview" style="background: linear-gradient(135deg, #fce4ec, #e1f5fe);">
+          <div class="photoboat pb-4" style="background: linear-gradient(180deg,#fce4ec,#e1bee7); border: 8px solid #f8bbd0;">
+            <div class="pb-strip" style="background:rgba(255,255,255,0.2);">🦋</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.2);">🌈</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.2);">🎀</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.2);">🍬</div>
+            <div class="pb-footer" style="color:#E91E63; font-size:0.6rem;">FotoKita ♡</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Pastel Dream</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Lembut dan menggemaskan untuk semua usia</div>
+          <div class="frame-meta">
+            <span class="frame-tag popular">⭐ Favorit</span>
+            <span class="frame-strips">📷 4 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+      <!-- WEDDING BLISS -->
+      <div class="frame-card reveal" data-cat="elegan romantis" onclick="selectFrame(this, 'Wedding Bliss')">
+        <div class="frame-preview" style="background: linear-gradient(135deg,#fdfbf7,#f0e6d3);">
+          <div class="photoboat pb-3" style="background: #FFFDF9; border: 8px solid #DDD0B8;">
+            <div class="pb-strip" style="background:rgba(212,168,83,0.08);">💍</div>
+            <div class="pb-strip" style="background:rgba(212,168,83,0.08);">🌸</div>
+            <div class="pb-strip" style="background:rgba(212,168,83,0.08);">🥂</div>
+            <div class="pb-footer" style="color:#B5784A; font-family:'Playfair Display',serif; font-style:italic; font-size:0.6rem;">FotoKita Wedding</div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Wedding Bliss</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Mewah dan indah, spesial untuk hari pernikahan</div>
+          <div class="frame-meta">
+            <span class="frame-tag" style="background:#F5EDD6; color:#8B6914;">💒 Pernikahan</span>
+            <span class="frame-strips">📷 3 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+      <!-- RETRO FILM -->
+      <div class="frame-card reveal" data-cat="elegan lucu" onclick="selectFrame(this, 'Retro Film')">
+        <div class="frame-preview" style="background: #2A2A2A;">
+          <div class="photoboat pb-4" style="background: #1A1A1A; border: 8px solid #444; position:relative;">
+            <div style="position:absolute;top:0;left:0;right:0;height:6px;background:repeating-linear-gradient(to right,#555 0,#555 6px,transparent 6px,transparent 12px);"></div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.04);">🎞️</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.04);">📽️</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.04);">🎬</div>
+            <div class="pb-strip" style="background:rgba(255,255,255,0.04);">⬛</div>
+            <div class="pb-footer" style="color:#FFD700; font-family:'Courier New',monospace; font-size:0.55rem; letter-spacing:0.2em;">FOTOKITA FILM</div>
+            <div style="position:absolute;bottom:0;left:0;right:0;height:6px;background:repeating-linear-gradient(to right,#555 0,#555 6px,transparent 6px,transparent 12px);"></div>
+          </div>
+        </div>
+        <div class="frame-info">
+          <div class="frame-name">Retro Film</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Nuansa film seluloid lawas yang ikonik dan artistik</div>
+          <div class="frame-meta">
+            <span class="frame-tag new">✦ Eksklusif</span>
+            <span class="frame-strips">📷 4 Strip</span>
+          </div>
+          <button class="btn-select">Pilih Frame Ini</button>
+        </div>
+      </div>
+
+    </div><!-- /frames-grid -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo">Foto<span>Kita</span></div>
+      <p>Mengabadikan momen berharga dengan photoboat interaktif berkualitas tinggi di seluruh Indonesia.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Frame</h4>
+      <ul>
+        <li><a href="#">Classic White</a></li>
+        <li><a href="#">Vintage Gold</a></li>
+        <li><a href="#">Midnight Noir</a></li>
+        <li><a href="#">Lihat Semua →</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Kontak</h4>
+      <ul>
+        <li><a href="#">📍 Surabaya, Jawa Timur</a></li>
+        <li><a href="#">📞 +62 857-9151-3800</a></li>
+        <li><a href="#">✉️ teknarupadigital@gmail.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 FotoKita. Semua hak dilindungi.</span>
+    <span><a href="#">Kebijakan Privasi</a></span>
+  </div>
+</footer>
+
+<!-- SELECTION BAR -->
+<div class="selection-bar" id="selectionBar">
+  <span class="sel-label">Frame dipilih:</span>
+  <span class="sel-name" id="selName">—</span>
+  <button class="sel-btn" onclick="bookNow()">Pesan Sekarang →</button>
+</div>
 
 <script>
-let photos = [null, null, null, null];
-let currentTheme = 'classic';
-let currentLayout = 'strip'; // 'strip' atau 'landscape'
-let currentTimer = 0;
-let cameraStream = null;
-let currentSlot = 0; 
-let facingMode = 'user';
-let isSnapping = false;
-
-window.onload = () => { buildSlots(); renderStrip(); startStream(); updateUI(); };
-
-async function startStream() {
-  if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-  const video = document.getElementById('camera-video');
-  try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+  // ── REVEAL ON SCROLL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
     });
-    video.srcObject = cameraStream;
-  } catch (e) { alert("Akses kamera ditolak/tidak ditemukan. Gunakan upload manual."); }
-}
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
 
-function flipCamera() { facingMode = facingMode === 'user' ? 'environment' : 'user'; startStream(); }
+  // ── FRAME FILTER ──
+  function filterFrames(cat, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
 
-function setTimer(el, time) {
-  document.querySelectorAll('#timerTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-  el.classList.add('active'); currentTimer = time;
-}
-
-function setLayout(el, layout) {
-  document.querySelectorAll('.layout-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-  el.classList.add('active'); 
-  currentLayout = layout;
-  
-  const container = document.getElementById('previewContainer');
-  container.className = `strip-preview is-${layout}`;
-  renderStrip();
-}
-
-function setTheme(el, theme) {
-  document.querySelectorAll('.frame-opt').forEach(o => o.classList.remove('active'));
-  el.classList.add('active'); currentTheme = theme; renderStrip();
-}
-
-function triggerSnap() {
-  if(isSnapping || currentSlot >= 4) return;
-  const btnSnap = document.getElementById('btnSnap');
-  
-  if (currentTimer === 0) { executeSnap(); } 
-  else {
-    isSnapping = true; btnSnap.disabled = true;
-    let t = currentTimer;
-    let display = document.getElementById('countdown-display');
-    display.style.display = 'flex'; display.innerText = t;
-    
-    let interval = setInterval(() => {
-      t--;
-      if (t > 0) { display.innerText = t; } 
-      else {
-        clearInterval(interval); display.style.display = 'none';
-        executeSnap(); isSnapping = false; btnSnap.disabled = false;
+    document.querySelectorAll('.frame-card').forEach(card => {
+      if (cat === 'semua') {
+        card.style.display = '';
+      } else {
+        const cardCat = card.dataset.cat || '';
+        card.style.display = cardCat.includes(cat) ? '' : 'none';
       }
-    }, 1000);
+    });
   }
-}
 
-function executeSnap() {
-  const video = document.getElementById('camera-video');
-  const canvas = document.getElementById('camera-canvas');
-  canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
-  const ctx = canvas.getContext('2d');
-  
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-  
-  const img = new Image();
-  img.onload = () => {
-    photos[currentSlot] = img;
-    document.getElementById(`thumb${currentSlot}`).src = dataUrl;
-    renderStrip(); currentSlot++; updateUI();
-  };
-  img.src = dataUrl;
-}
+  // ── SELECT FRAME ──
+  let selectedCard = null;
 
-function resetPhotos() {
-  photos = [null, null, null, null]; currentSlot = 0;
-  for(let i=0; i<4; i++) document.getElementById(`thumb${i}`).src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-  updateUI(); renderStrip();
-}
+  function selectFrame(card, name) {
+    if (selectedCard) {
+      selectedCard.classList.remove('selected');
+      selectedCard.querySelector('.btn-select').textContent = 'Pilih Frame Ini';
+    }
+    card.classList.add('selected');
+    card.querySelector('.btn-select').textContent = '✓ Terpilih';
+    selectedCard = card;
 
-function updateUI() {
-  document.querySelectorAll('.slot-thumb-wrapper').forEach((el, index) => {
-    if(index === currentSlot) el.classList.add('active'); else el.classList.remove('active');
+    document.getElementById('selName').textContent = name;
+    document.getElementById('selectionBar').classList.add('visible');
+  }
+
+  function bookNow() {
+    const name = document.getElementById('selName').textContent;
+    alert(`Terima kasih! Kamu telah memilih frame "${name}".\nTim FotoKita akan segera menghubungimu untuk konfirmasi pemesanan. 📸`);
+  }
+
+  // ── PARALLAX POLAROIDS ──
+  window.addEventListener('mousemove', (e) => {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const dx = (e.clientX - cx) / cx;
+    const dy = (e.clientY - cy) / cy;
+
+    document.querySelectorAll('.polaroid').forEach((p, i) => {
+      const factor = (i % 2 === 0 ? 1 : -1) * (i + 1) * 4;
+      p.style.transform = p.style.transform.replace(/translate\([^)]*\)/, '') +
+        ` translate(${dx * factor}px, ${dy * factor * 0.5}px)`;
+    });
   });
-  const btnSnap = document.getElementById('btnSnap'), btnReset = document.getElementById('btnReset');
-  if (currentSlot >= 4) {
-    document.getElementById('camStatus').textContent = "🎉 Selesai! Silakan Download";
-    btnSnap.style.display = 'none'; btnReset.style.display = 'block';
-  } else {
-    document.getElementById('camStatus').textContent = `📸 Ambil Foto (${currentSlot + 1}/4)`;
-    btnSnap.style.display = 'block'; btnReset.style.display = 'none'; btnSnap.disabled = false;
-  }
-}
-
-function buildSlots() {
-  const grid = document.getElementById('slotGrid'); grid.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const div = document.createElement('div'); div.className = 'slot-thumb-wrapper';
-    if(i === 0) div.classList.add('active');
-    div.onclick = () => document.getElementById(`file${i}`).click();
-    div.innerHTML = `<img class="slot-thumb" id="thumb${i}" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div class="slot-overlay-text">Slot ${i+1}<br>🖼️</div>`;
-    grid.appendChild(div);
-  }
-}
-
-function loadPhoto(index, input) {
-  if (!input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      photos[index] = img; document.getElementById(`thumb${index}`).src = e.target.result;
-      renderStrip();
-      if(index === currentSlot && currentSlot < 4) { currentSlot++; updateUI(); }
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
-}
-
-// THEMES
-const themes = {
-  classic: { bg: '#1A3A2A', border: '#C9A84C', accent: '#8B6914', text: '#F0D080', headerBg: '#0F2218' },
-  floral: { bg: '#2D6A4F', border: '#B7E4C7', accent: '#1B4332', text: '#D8F3DC', headerBg: '#1B4332' },
-  moonstar: { bg: '#0D1B2A', border: '#FFD166', accent: '#073B4C', text: '#FFD166', headerBg: '#05101A' },
-  modern: { bg: '#0E3B43', border: '#43C6DB', accent: '#072B2F', text: '#86E6F5', headerBg: '#051C20' },
-  pastel: { bg: '#F8FAF0', border: '#A8D5BA', accent: '#7BBF9C', text: '#3D7A5A', headerBg: '#E8F5E1' },
-  dark: { bg: '#0A0A0A', border: '#C9A84C', accent: '#1A1A1A', text: '#C9A84C', headerBg: '#050505' }
-};
-
-function renderStrip() {
-  const t = themes[currentTheme];
-  const canvas = document.getElementById('strip-canvas');
-  const ctx = canvas.getContext('2d');
-  
-  if (currentLayout === 'strip') {
-    // === FORMAT STRIP (MEMANJANG) ===
-    const W = 480, HEAD_H = 110, FOOT_H = 80, GAP = 16, P_W = W - 48, P_H = P_W * 0.75;
-    const TOTAL_H = HEAD_H + 4 * (P_H + GAP) + GAP + FOOT_H;
-    canvas.width = W; canvas.height = TOTAL_H;
-    
-    ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, TOTAL_H);
-    ctx.strokeStyle = t.border; ctx.lineWidth = 6; ctx.strokeRect(10, 10, W-20, TOTAL_H-20);
-    ctx.fillStyle = t.headerBg; ctx.fillRect(16, 16, W-32, HEAD_H);
-    
-    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
-    ctx.font = "bold 32px Arial"; ctx.fillText("عيد الفطر المبارك", W/2, HEAD_H/2 + 25);
-    ctx.font = "bold 14px Arial"; ctx.fillText("IDUL FITRI 1447 H", W/2, HEAD_H/2 + 45);
-
-    for (let i = 0; i < 4; i++) {
-      const px = 24, py = HEAD_H + GAP + i*(P_H + GAP);
-      ctx.fillStyle = t.accent; ctx.fillRect(px, py, P_W, P_H);
-      if(photos[i]){
-        const scale = Math.max(P_W/photos[i].width, P_H/photos[i].height);
-        const sw = photos[i].width*scale, sh = photos[i].height*scale;
-        ctx.save(); ctx.beginPath(); ctx.rect(px, py, P_W, P_H); ctx.clip();
-        ctx.drawImage(photos[i], px-(sw-P_W)/2, py-(sh-P_H)/2, sw, sh); ctx.restore();
-      } else {
-        ctx.fillStyle = "rgba(255,255,255,0.05)"; ctx.fillRect(px, py, P_W, P_H);
-        ctx.fillStyle = t.border; ctx.font = "bold 24px Arial"; ctx.fillText(`Slot ${i+1}`, px+P_W/2, py+P_H/2);
-      }
-      ctx.strokeStyle = t.border; ctx.lineWidth = 4; ctx.strokeRect(px, py, P_W, P_H);
-    }
-    
-    ctx.fillStyle = t.headerBg; ctx.fillRect(16, TOTAL_H - FOOT_H - 16, W-32, FOOT_H);
-    ctx.fillStyle = t.text; ctx.font = "bold 18px Arial"; 
-    ctx.fillText("Minal 'Aidin wal-Fa'izin", W/2, TOTAL_H - FOOT_H/2 - 5);
-    
-  } else {
-    // === FORMAT LANDSCAPE (MENYAMPING, PERBAIKAN MEPET) ===
-    const W = 1200, H = 1110; // Tinggi dinaikkan dari 1050 ke 1110 agar ada jarak untuk footer
-    canvas.width = W; canvas.height = H;
-    
-    ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
-    // Border utama
-    ctx.strokeStyle = t.border; ctx.lineWidth = 10; ctx.strokeRect(15, 15, W-30, H-30);
-    
-    // Header
-    const headerH = 110;
-    ctx.fillStyle = t.headerBg; ctx.fillRect(25, 25, W-50, headerH);
-    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
-    ctx.font = "bold 44px Arial"; 
-    ctx.fillText("عيد الفطر المبارك - IDUL FITRI 1447 H", W/2, 95);
-
-    // Area Grid Foto 2x2 Besar
-    const gap = 30;
-    const pW = 500; // Lebar foto tetap besar
-    const pH = pW * 0.75; // Tinggi menyesuaikan 4:3 = 375px
-    const totalGridW = (pW * 2) + gap; 
-    
-    // Penempatan grid foto di tengah
-    const startX = (W - totalGridW) / 2;
-    const startY = 25 + headerH + 45; // Jarak aman di bawah header (45px)
-
-    for(let i=0; i<4; i++){
-      const col = i % 2, row = Math.floor(i / 2);
-      const px = startX + col * (pW + gap), py = startY + row * (pH + gap);
-      
-      ctx.fillStyle = t.accent; ctx.fillRect(px, py, pW, pH);
-      if(photos[i]){
-        const scale = Math.max(pW/photos[i].width, pH/photos[i].height);
-        const sw = photos[i].width*scale, sh = photos[i].height*scale;
-        ctx.save(); ctx.beginPath(); ctx.rect(px, py, pW, pH); ctx.clip();
-        ctx.drawImage(photos[i], px-(sw-pW)/2, py-(sh-pH)/2, sw, sh); ctx.restore();
-      } else {
-        ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(px, py, pW, pH);
-        ctx.fillStyle = t.border; ctx.font = "bold 32px Arial"; ctx.fillText(`Slot ${i+1}`, px+pW/2, py+pH/2 + 10);
-      }
-      ctx.strokeStyle = t.border; ctx.lineWidth = 6; ctx.strokeRect(px, py, pW, pH);
-    }
-
-    // === FOOTER MINAL AIDIN ===
-    const footerH = 80;
-    // Mengunci posisi footer di paling bawah kanvas (sebelum border)
-    const footerTop = H - 25 - footerH; 
-    
-    ctx.fillStyle = t.headerBg; ctx.fillRect(25, footerTop, W-50, footerH);
-    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
-    ctx.font = "bold 26px Arial"; ctx.letterSpacing = "3px";
-    ctx.fillText("Minal 'Aidin wal-Fa'izin · Mohon Maaf Lahir & Batin", W/2, footerTop + footerH/2 + 10);
-  }
-
-  document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.9);
-}
-
-function downloadStrip() {
-  const link = document.createElement('a');
-  link.download = `IdulFitri_${currentLayout}_${currentTheme}.jpg`;
-  link.href = document.getElementById('strip-canvas').toDataURL('image/jpeg', 1.0);
-  link.click();
-}
 </script>
 </body>
 </html>
