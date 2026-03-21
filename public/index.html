@@ -1,10 +1,498 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Fotokita</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FotoKita - Idul Fitri</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Amiri:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-dark: #8B6914;
+    --cream: #FDF6E3;
+    --green-dark: #1A3A2A;
+    --green-mid: #2D6A4F;
+    --green-light: #74C69D;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--green-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(201,168,76,0.1) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    width: 100%;
+  }
+
+  header .arabic {
+    font-family: 'Amiri', serif;
+    color: var(--gold);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    text-shadow: 0 0 20px rgba(201,168,76,0.4);
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--cream);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .divider {
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0.8rem auto;
+  }
+
+  .app-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1rem 1.5rem 3rem;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .panel {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    flex: 1 1 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .panel h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding-bottom: 0.7rem;
+    text-align: center;
+  }
+
+  /* ===== KAMERA & KONTROL ===== */
+  .cam-status { text-align: center; color: var(--cream); font-weight: 600; }
+  
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(201,168,76,0.3);
+    background: #000;
+  }
+
+  #camera-video { width: 100%; height: 100%; object-fit: cover; }
+  
+  #countdown-display {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    font-size: 6rem; font-weight: 700; color: white; background: rgba(0,0,0,0.4); z-index: 10;
+  }
+
+  .camera-controls { display: flex; gap: 0.7rem; flex-wrap: wrap; justify-content: center; }
+  .cam-btn { padding: 0.8rem 1.2rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+  .cam-btn-snap { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: var(--green-dark); flex-grow: 1; font-size: 1rem; border-radius: 50px; }
+  .cam-btn-snap:hover { transform: scale(1.03); }
+  .cam-btn-snap:disabled { filter: grayscale(1); opacity: 0.6; }
+  .cam-btn-flip { background: rgba(255,255,255,0.1); color: var(--cream); }
+  
+  /* GRID UPLOAD */
+  .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .slot-thumb-wrapper {
+    aspect-ratio: 4/3; border-radius: 8px; border: 1.5px dashed rgba(201,168,76,0.4);
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .slot-thumb-wrapper.active { border-color: var(--gold); border-style: solid; box-shadow: 0 0 10px rgba(201,168,76,0.3); }
+  .slot-thumb { width: 100%; height: 100%; object-fit: cover; }
+  .slot-overlay-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: rgba(255,255,255,0.6); pointer-events: none; text-align: center;}
+  
+  input[type="file"] { display: none; }
+  canvas { display: none; }
+
+  /* ===== PENGATURAN TEMA & LAYOUT ===== */
+  .setting-group { margin-bottom: 0.5rem; }
+  .setting-group label { color: var(--gold-light); font-size: 0.78rem; display: block; text-align: center; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;}
+  
+  .layout-tabs, .timer-tabs { display: flex; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 10px; }
+  .tab-btn {
+    flex: 1; text-align: center; padding: 0.5rem; color: rgba(255,255,255,0.5); font-size: 0.8rem;
+    font-weight: 600; cursor: pointer; border-radius: 7px; transition: 0.2s;
+  }
+  .tab-btn.active { background: rgba(201,168,76,0.2); color: var(--gold); }
+  
+  .frame-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .frame-opt {
+    aspect-ratio: 2/1; border-radius: 8px; border: 2px solid rgba(201,168,76,0.2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--cream); font-weight: 600; transition: 0.2s;
+  }
+  .frame-opt.active { border-color: var(--gold); background: rgba(201,168,76,0.15); color: var(--gold); }
+
+  /* ===== PREVIEW AREA ===== */
+  .preview-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; }
+  .strip-preview {
+    position: relative; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.3), 0 8px 40px rgba(0,0,0,0.6);
+    transition: max-width 0.3s ease;
+    width: 100%;
+  }
+  
+  /* Animasi Transisi Layout Preview */
+  .strip-preview.is-strip { max-width: 280px; }
+  .strip-preview.is-landscape { max-width: 100%; }
+  
+  #preview-img { width: 100%; display: block; border-radius: 12px; }
+
+  .btn-download {
+    width: 100%; padding: 0.9rem; background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--green-dark); border: none; border-radius: 12px; font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.3); transition: 0.2s;
+  }
+  .btn-download:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.5); }
+  
+  footer { color: rgba(255,255,255,0.3); font-size: 0.75rem; text-align: center; padding: 1rem; }
+</style>
 </head>
 <body>
-  <h1>Selamat datang di Fotokita 🎉</h1>
+
+<header>
+  <div class="arabic">عيد الفطر المبارك</div>
+  <div class="divider"></div>
+  <h1>Idul Fitri 1447 H</h1>
+</header>
+
+<div class="app-container">
+  
+  <div class="panel">
+    <h2>Photobooth</h2>
+    <div class="cam-status" id="camStatus">📸 Ambil Foto (1/4)</div>
+
+    <div class="video-wrapper">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <div id="countdown-display">3</div>
+    </div>
+    <canvas id="camera-canvas"></canvas>
+
+    <div class="camera-controls">
+      <button class="cam-btn cam-btn-flip" onclick="flipCamera()">🔄 Balik</button>
+      <button class="cam-btn cam-btn-snap" id="btnSnap" onclick="triggerSnap()">📸 Jepret Foto</button>
+      <button class="cam-btn cam-btn-flip" id="btnReset" onclick="resetPhotos()" style="display:none; width:100%;">🔄 Ulangi dari Awal</button>
+    </div>
+
+    <div class="setting-group">
+      <label>Timer Jepret</label>
+      <div class="timer-tabs" id="timerTabs">
+        <div class="tab-btn active" data-time="0" onclick="setTimer(this, 0)">Off</div>
+        <div class="tab-btn" data-time="3" onclick="setTimer(this, 3)">3s</div>
+        <div class="tab-btn" data-time="5" onclick="setTimer(this, 5)">5s</div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>Atau Upload Manual (Klik Kotak)</label>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Hasil Foto</h2>
+
+    <div class="setting-group">
+      <label>Pilih Format Bingkai</label>
+      <div class="layout-tabs">
+        <div class="tab-btn active" onclick="setLayout(this, 'strip')">⬇️ Memanjang (Strip)</div>
+        <div class="tab-btn" onclick="setLayout(this, 'landscape')">➡️ Menyamping (Landscape)</div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>Pilih Tema Warna</label>
+      <div class="frame-grid" id="frameGrid">
+        <div class="frame-opt active" onclick="setTheme(this,'classic')">Classic Gold</div>
+        <div class="frame-opt" onclick="setTheme(this,'floral')">Floral Green</div>
+        <div class="frame-opt" onclick="setTheme(this,'moonstar')">Moon & Star</div>
+        <div class="frame-opt" onclick="setTheme(this,'modern')">Modern Teal</div>
+        <div class="frame-opt" onclick="setTheme(this,'pastel')">Pastel Mint</div>
+        <div class="frame-opt" onclick="setTheme(this,'dark')">Dark Luxe</div>
+      </div>
+    </div>
+
+    <div class="preview-wrapper">
+      <div class="strip-preview is-strip" id="previewContainer">
+        <img id="preview-img" src="">
+      </div>
+    </div>
+
+    <button class="btn-download" onclick="downloadStrip()">⬇ Download Hasil Foto</button>
+  </div>
+
+</div>
+<canvas id="strip-canvas"></canvas>
+
+<footer>Minal 'Aidin wal-Fa'izin · Mohon Maaf Lahir & Batin</footer>
+
+<input type="file" id="file0" accept="image/*" onchange="loadPhoto(0,this)">
+<input type="file" id="file1" accept="image/*" onchange="loadPhoto(1,this)">
+<input type="file" id="file2" accept="image/*" onchange="loadPhoto(2,this)">
+<input type="file" id="file3" accept="image/*" onchange="loadPhoto(3,this)">
+
+<script>
+let photos = [null, null, null, null];
+let currentTheme = 'classic';
+let currentLayout = 'strip'; // 'strip' atau 'landscape'
+let currentTimer = 0;
+let cameraStream = null;
+let currentSlot = 0; 
+let facingMode = 'user';
+let isSnapping = false;
+
+window.onload = () => { buildSlots(); renderStrip(); startStream(); updateUI(); };
+
+async function startStream() {
+  if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+  const video = document.getElementById('camera-video');
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+    });
+    video.srcObject = cameraStream;
+  } catch (e) { alert("Akses kamera ditolak/tidak ditemukan. Gunakan upload manual."); }
+}
+
+function flipCamera() { facingMode = facingMode === 'user' ? 'environment' : 'user'; startStream(); }
+
+function setTimer(el, time) {
+  document.querySelectorAll('#timerTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active'); currentTimer = time;
+}
+
+function setLayout(el, layout) {
+  document.querySelectorAll('.layout-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active'); 
+  currentLayout = layout;
+  
+  const container = document.getElementById('previewContainer');
+  container.className = `strip-preview is-${layout}`;
+  renderStrip();
+}
+
+function setTheme(el, theme) {
+  document.querySelectorAll('.frame-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active'); currentTheme = theme; renderStrip();
+}
+
+function triggerSnap() {
+  if(isSnapping || currentSlot >= 4) return;
+  const btnSnap = document.getElementById('btnSnap');
+  
+  if (currentTimer === 0) { executeSnap(); } 
+  else {
+    isSnapping = true; btnSnap.disabled = true;
+    let t = currentTimer;
+    let display = document.getElementById('countdown-display');
+    display.style.display = 'flex'; display.innerText = t;
+    
+    let interval = setInterval(() => {
+      t--;
+      if (t > 0) { display.innerText = t; } 
+      else {
+        clearInterval(interval); display.style.display = 'none';
+        executeSnap(); isSnapping = false; btnSnap.disabled = false;
+      }
+    }, 1000);
+  }
+}
+
+function executeSnap() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  
+  const img = new Image();
+  img.onload = () => {
+    photos[currentSlot] = img;
+    document.getElementById(`thumb${currentSlot}`).src = dataUrl;
+    renderStrip(); currentSlot++; updateUI();
+  };
+  img.src = dataUrl;
+}
+
+function resetPhotos() {
+  photos = [null, null, null, null]; currentSlot = 0;
+  for(let i=0; i<4; i++) document.getElementById(`thumb${i}`).src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  updateUI(); renderStrip();
+}
+
+function updateUI() {
+  document.querySelectorAll('.slot-thumb-wrapper').forEach((el, index) => {
+    if(index === currentSlot) el.classList.add('active'); else el.classList.remove('active');
+  });
+  const btnSnap = document.getElementById('btnSnap'), btnReset = document.getElementById('btnReset');
+  if (currentSlot >= 4) {
+    document.getElementById('camStatus').textContent = "🎉 Selesai! Silakan Download";
+    btnSnap.style.display = 'none'; btnReset.style.display = 'block';
+  } else {
+    document.getElementById('camStatus').textContent = `📸 Ambil Foto (${currentSlot + 1}/4)`;
+    btnSnap.style.display = 'block'; btnReset.style.display = 'none'; btnSnap.disabled = false;
+  }
+}
+
+function buildSlots() {
+  const grid = document.getElementById('slotGrid'); grid.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const div = document.createElement('div'); div.className = 'slot-thumb-wrapper';
+    if(i === 0) div.classList.add('active');
+    div.onclick = () => document.getElementById(`file${i}`).click();
+    div.innerHTML = `<img class="slot-thumb" id="thumb${i}" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div class="slot-overlay-text">Slot ${i+1}<br>🖼️</div>`;
+    grid.appendChild(div);
+  }
+}
+
+function loadPhoto(index, input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      photos[index] = img; document.getElementById(`thumb${index}`).src = e.target.result;
+      renderStrip();
+      if(index === currentSlot && currentSlot < 4) { currentSlot++; updateUI(); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// THEMES
+const themes = {
+  classic: { bg: '#1A3A2A', border: '#C9A84C', accent: '#8B6914', text: '#F0D080', headerBg: '#0F2218' },
+  floral: { bg: '#2D6A4F', border: '#B7E4C7', accent: '#1B4332', text: '#D8F3DC', headerBg: '#1B4332' },
+  moonstar: { bg: '#0D1B2A', border: '#FFD166', accent: '#073B4C', text: '#FFD166', headerBg: '#05101A' },
+  modern: { bg: '#0E3B43', border: '#43C6DB', accent: '#072B2F', text: '#86E6F5', headerBg: '#051C20' },
+  pastel: { bg: '#F8FAF0', border: '#A8D5BA', accent: '#7BBF9C', text: '#3D7A5A', headerBg: '#E8F5E1' },
+  dark: { bg: '#0A0A0A', border: '#C9A84C', accent: '#1A1A1A', text: '#C9A84C', headerBg: '#050505' }
+};
+
+function renderStrip() {
+  const t = themes[currentTheme];
+  const canvas = document.getElementById('strip-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  if (currentLayout === 'strip') {
+    // === FORMAT STRIP (MEMANJANG) ===
+    const W = 480, HEAD_H = 110, FOOT_H = 80, GAP = 16, P_W = W - 48, P_H = P_W * 0.75;
+    const TOTAL_H = HEAD_H + 4 * (P_H + GAP) + GAP + FOOT_H;
+    canvas.width = W; canvas.height = TOTAL_H;
+    
+    ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, TOTAL_H);
+    ctx.strokeStyle = t.border; ctx.lineWidth = 6; ctx.strokeRect(10, 10, W-20, TOTAL_H-20);
+    ctx.fillStyle = t.headerBg; ctx.fillRect(16, 16, W-32, HEAD_H);
+    
+    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
+    ctx.font = "bold 32px Arial"; ctx.fillText("عيد الفطر المبارك", W/2, HEAD_H/2 + 25);
+    ctx.font = "bold 14px Arial"; ctx.fillText("IDUL FITRI 1447 H", W/2, HEAD_H/2 + 45);
+
+    for (let i = 0; i < 4; i++) {
+      const px = 24, py = HEAD_H + GAP + i*(P_H + GAP);
+      ctx.fillStyle = t.accent; ctx.fillRect(px, py, P_W, P_H);
+      if(photos[i]){
+        const scale = Math.max(P_W/photos[i].width, P_H/photos[i].height);
+        const sw = photos[i].width*scale, sh = photos[i].height*scale;
+        ctx.save(); ctx.beginPath(); ctx.rect(px, py, P_W, P_H); ctx.clip();
+        ctx.drawImage(photos[i], px-(sw-P_W)/2, py-(sh-P_H)/2, sw, sh); ctx.restore();
+      }
+      ctx.strokeStyle = t.border; ctx.lineWidth = 4; ctx.strokeRect(px, py, P_W, P_H);
+    }
+    
+    ctx.fillStyle = t.headerBg; ctx.fillRect(16, TOTAL_H - FOOT_H - 16, W-32, FOOT_H);
+    ctx.fillStyle = t.text; ctx.font = "bold 18px Arial"; 
+    ctx.fillText("Minal 'Aidin wal-Fa'izin", W/2, TOTAL_H - FOOT_H/2 - 5);
+    
+  } else {
+    // === FORMAT LANDSCAPE (MENYAMPING 2x2) ===
+    const W = 1200, H = 800;
+    canvas.width = W; canvas.height = H;
+    
+    ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = t.border; ctx.lineWidth = 10; ctx.strokeRect(15, 15, W-30, H-30);
+    
+    // Panel Kiri (Text area)
+    const leftW = 380;
+    ctx.fillStyle = t.headerBg; ctx.fillRect(25, 25, leftW, H-50);
+    
+    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
+    ctx.font = "bold 45px Arial"; ctx.fillText("عيد الفطر المبارك", 25 + leftW/2, H/2 - 30);
+    ctx.font = "bold 20px Arial"; ctx.letterSpacing = "3px"; ctx.fillText("IDUL FITRI 1447 H", 25 + leftW/2, H/2 + 10);
+    ctx.font = "bold 24px Arial"; ctx.fillText("Minal 'Aidin wal-Fa'izin", 25 + leftW/2, H - 100);
+
+    // Garis pembatas
+    ctx.beginPath(); ctx.strokeStyle = t.border; ctx.lineWidth = 3;
+    ctx.moveTo(25 + leftW, 50); ctx.lineTo(25 + leftW, H-50); ctx.stroke();
+
+    // Panel Kanan (Grid 2x2 Foto)
+    const gap = 30;
+    const startX = 25 + leftW + 40; // 40 is left padding for right panel
+    const rightAvailW = W - startX - 40; // 40 is right margin
+    const pW = (rightAvailW - gap) / 2;
+    const pH = pW * 0.75; // 4:3 rasio
+    const startY = (H - (pH*2 + gap)) / 2;
+
+    for(let i=0; i<4; i++){
+      const col = i % 2, row = Math.floor(i / 2);
+      const px = startX + col * (pW + gap), py = startY + row * (pH + gap);
+      
+      ctx.fillStyle = t.accent; ctx.fillRect(px, py, pW, pH);
+      if(photos[i]){
+        const scale = Math.max(pW/photos[i].width, pH/photos[i].height);
+        const sw = photos[i].width*scale, sh = photos[i].height*scale;
+        ctx.save(); ctx.beginPath(); ctx.rect(px, py, pW, pH); ctx.clip();
+        ctx.drawImage(photos[i], px-(sw-pW)/2, py-(sh-pH)/2, sw, sh); ctx.restore();
+      } else {
+        ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(px, py, pW, pH);
+        ctx.fillStyle = t.border; ctx.font = "bold 24px Arial"; ctx.fillText(`Slot ${i+1}`, px+pW/2, py+pH/2);
+      }
+      ctx.strokeStyle = t.border; ctx.lineWidth = 5; ctx.strokeRect(px, py, pW, pH);
+    }
+  }
+
+  document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.9);
+}
+
+function downloadStrip() {
+  const link = document.createElement('a');
+  link.download = `IdulFitri_${currentLayout}_${currentTheme}.jpg`;
+  link.href = document.getElementById('strip-canvas').toDataURL('image/jpeg', 1.0);
+  link.click();
+}
+</script>
 </body>
 </html>
