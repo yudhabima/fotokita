@@ -429,6 +429,9 @@ function renderStrip() {
         const sw = photos[i].width*scale, sh = photos[i].height*scale;
         ctx.save(); ctx.beginPath(); ctx.rect(px, py, P_W, P_H); ctx.clip();
         ctx.drawImage(photos[i], px-(sw-P_W)/2, py-(sh-P_H)/2, sw, sh); ctx.restore();
+      } else {
+        ctx.fillStyle = "rgba(255,255,255,0.05)"; ctx.fillRect(px, py, P_W, P_H);
+        ctx.fillStyle = t.border; ctx.font = "bold 24px Arial"; ctx.fillText(`Slot ${i+1}`, px+P_W/2, py+P_H/2);
       }
       ctx.strokeStyle = t.border; ctx.lineWidth = 4; ctx.strokeRect(px, py, P_W, P_H);
     }
@@ -438,33 +441,30 @@ function renderStrip() {
     ctx.fillText("Minal 'Aidin wal-Fa'izin", W/2, TOTAL_H - FOOT_H/2 - 5);
     
   } else {
-    // === FORMAT LANDSCAPE (MENYAMPING 2x2) ===
-    const W = 1200, H = 800;
+    // === FORMAT LANDSCAPE (MENYAMPING, PERBAIKAN MEPET) ===
+    const W = 1200, H = 1110; // Tinggi dinaikkan dari 1050 ke 1110 agar ada jarak untuk footer
     canvas.width = W; canvas.height = H;
     
     ctx.fillStyle = t.bg; ctx.fillRect(0, 0, W, H);
+    // Border utama
     ctx.strokeStyle = t.border; ctx.lineWidth = 10; ctx.strokeRect(15, 15, W-30, H-30);
     
-    // Panel Kiri (Text area)
-    const leftW = 380;
-    ctx.fillStyle = t.headerBg; ctx.fillRect(25, 25, leftW, H-50);
-    
+    // Header
+    const headerH = 110;
+    ctx.fillStyle = t.headerBg; ctx.fillRect(25, 25, W-50, headerH);
     ctx.textAlign = 'center'; ctx.fillStyle = t.text;
-    ctx.font = "bold 45px Arial"; ctx.fillText("عيد الفطر المبارك", 25 + leftW/2, H/2 - 30);
-    ctx.font = "bold 20px Arial"; ctx.letterSpacing = "3px"; ctx.fillText("IDUL FITRI 1447 H", 25 + leftW/2, H/2 + 10);
-    ctx.font = "bold 24px Arial"; ctx.fillText("Minal 'Aidin wal-Fa'izin", 25 + leftW/2, H - 100);
+    ctx.font = "bold 44px Arial"; 
+    ctx.fillText("عيد الفطر المبارك - IDUL FITRI 1447 H", W/2, 95);
 
-    // Garis pembatas
-    ctx.beginPath(); ctx.strokeStyle = t.border; ctx.lineWidth = 3;
-    ctx.moveTo(25 + leftW, 50); ctx.lineTo(25 + leftW, H-50); ctx.stroke();
-
-    // Panel Kanan (Grid 2x2 Foto)
+    // Area Grid Foto 2x2 Besar
     const gap = 30;
-    const startX = 25 + leftW + 40; // 40 is left padding for right panel
-    const rightAvailW = W - startX - 40; // 40 is right margin
-    const pW = (rightAvailW - gap) / 2;
-    const pH = pW * 0.75; // 4:3 rasio
-    const startY = (H - (pH*2 + gap)) / 2;
+    const pW = 500; // Lebar foto tetap besar
+    const pH = pW * 0.75; // Tinggi menyesuaikan 4:3 = 375px
+    const totalGridW = (pW * 2) + gap; 
+    
+    // Penempatan grid foto di tengah
+    const startX = (W - totalGridW) / 2;
+    const startY = 25 + headerH + 45; // Jarak aman di bawah header (45px)
 
     for(let i=0; i<4; i++){
       const col = i % 2, row = Math.floor(i / 2);
@@ -477,11 +477,21 @@ function renderStrip() {
         ctx.save(); ctx.beginPath(); ctx.rect(px, py, pW, pH); ctx.clip();
         ctx.drawImage(photos[i], px-(sw-pW)/2, py-(sh-pH)/2, sw, sh); ctx.restore();
       } else {
-        ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(px, py, pW, pH);
-        ctx.fillStyle = t.border; ctx.font = "bold 24px Arial"; ctx.fillText(`Slot ${i+1}`, px+pW/2, py+pH/2);
+        ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(px, py, pW, pH);
+        ctx.fillStyle = t.border; ctx.font = "bold 32px Arial"; ctx.fillText(`Slot ${i+1}`, px+pW/2, py+pH/2 + 10);
       }
-      ctx.strokeStyle = t.border; ctx.lineWidth = 5; ctx.strokeRect(px, py, pW, pH);
+      ctx.strokeStyle = t.border; ctx.lineWidth = 6; ctx.strokeRect(px, py, pW, pH);
     }
+
+    // === FOOTER MINAL AIDIN ===
+    const footerH = 80;
+    // Mengunci posisi footer di paling bawah kanvas (sebelum border)
+    const footerTop = H - 25 - footerH; 
+    
+    ctx.fillStyle = t.headerBg; ctx.fillRect(25, footerTop, W-50, footerH);
+    ctx.textAlign = 'center'; ctx.fillStyle = t.text;
+    ctx.font = "bold 26px Arial"; ctx.letterSpacing = "3px";
+    ctx.fillText("Minal 'Aidin wal-Fa'izin · Mohon Maaf Lahir & Batin", W/2, footerTop + footerH/2 + 10);
   }
 
   document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.9);
