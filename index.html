@@ -789,8 +789,6 @@
   <ul class="nav-links">
     <li><a href="#how">Cara Kerja</a></li>
     <li><a href="#frames">Pilih Frame</a></li>
-    <li><a href="#testi">Ulasan</a></li>
-    <li><a href="#cta" class="nav-cta">Mulai Sekarang</a></li>
   </ul>
 </nav>
 
@@ -911,7 +909,6 @@
           <div class="frame-name">Classic White</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Bersih, timeless, cocok untuk semua acara</div>
           <div class="frame-meta">
-            <span class="frame-tag popular">⭐ Terpopuler</span>
             <span class="frame-strips">📷 4 Strip</span>
           </div>
           <a href="classic.html">
@@ -934,7 +931,6 @@
           <div class="frame-name">Vintage Gold</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Nuansa hangat bernuansa film analog klasik</div>
           <div class="frame-meta">
-            <span class="frame-tag">Elegan</span>
             <span class="frame-strips">📷 3 Strip</span>
           </div>
           <a href="vintage.html">
@@ -956,9 +952,8 @@
         </div>
         <div class="frame-info">
           <div class="frame-name">Idul Fitri</div>
-          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Dramatis dan penuh aura malam yang elegan</div>
+          <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Minal 'Aidin wal-Fa'izin · Mohon Maaf Lahir & Batin</div>
           <div class="frame-meta">
-            <span class="frame-tag new">✦ Baru</span>
             <span class="frame-strips">📷 4 Strip</span>
           </div>
           <a href="lebaran.html">
@@ -981,7 +976,7 @@
           <div class="frame-name">Rose Bloom</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Manis dan romantis untuk pasangan & couple</div>
           <div class="frame-meta">
-            <span class="frame-tag" style="background:#F9D7E3;">💕 Romantis</span>
+            <span class="frame-tag">Comingsoon</span>
             <span class="frame-strips">📷 3 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1003,7 +998,7 @@
           <div class="frame-name">Botanical Green</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Segar dan natural, cocok untuk outdoor event</div>
           <div class="frame-meta">
-            <span class="frame-tag new">✦ Baru</span>
+            <span class="frame-tag new">Comingsoon</span>
             <span class="frame-strips">📷 4 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1024,7 +1019,7 @@
           <div class="frame-name">Galaxy Dream</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Penuh warna dan serasa di antara bintang-bintang</div>
           <div class="frame-meta">
-            <span class="frame-tag" style="background: linear-gradient(135deg,#667eea,#764ba2); color:white;">🌌 Unik</span>
+            <span class="frame-tag" >Comingsoon</span>
             <span class="frame-strips">📷 3 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1046,7 +1041,7 @@
           <div class="frame-name">Pastel Dream</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Lembut dan menggemaskan untuk semua usia</div>
           <div class="frame-meta">
-            <span class="frame-tag popular">⭐ Favorit</span>
+            <span class="frame-tag popular">Comingsoon</span>
             <span class="frame-strips">📷 4 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1067,7 +1062,7 @@
           <div class="frame-name">Wedding Bliss</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Mewah dan indah, spesial untuk hari pernikahan</div>
           <div class="frame-meta">
-            <span class="frame-tag" style="background:#F5EDD6; color:#8B6914;">💒 Pernikahan</span>
+            <span class="frame-tag" >Comingsoon</span>
             <span class="frame-strips">📷 3 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1091,7 +1086,7 @@
           <div class="frame-name">Retro Film</div>
           <div style="font-size:0.82rem; color: var(--brown-mid); margin-top:4px;">Nuansa film seluloid lawas yang ikonik dan artistik</div>
           <div class="frame-meta">
-            <span class="frame-tag new">✦ Eksklusif</span>
+            <span class="frame-tag new">Comingsoon</span>
             <span class="frame-strips">📷 4 Strip</span>
           </div>
           <button class="btn-select">Pilih Frame Ini</button>
@@ -1133,13 +1128,6 @@
   </div>
 </footer>
 
-<!-- SELECTION BAR -->
-<div class="selection-bar" id="selectionBar">
-  <span class="sel-label">Frame dipilih:</span>
-  <span class="sel-name" id="selName">—</span>
-  <button class="sel-btn" onclick="bookNow()">Pesan Sekarang →</button>
-</div>
-
 <script>
   // ── REVEAL ON SCROLL ──
   const reveals = document.querySelectorAll('.reveal');
@@ -1169,19 +1157,6 @@
 
   // ── SELECT FRAME ──
   let selectedCard = null;
-
-  function selectFrame(card, name) {
-    if (selectedCard) {
-      selectedCard.classList.remove('selected');
-      selectedCard.querySelector('.btn-select').textContent = 'Pilih Frame Ini';
-    }
-    card.classList.add('selected');
-    card.querySelector('.btn-select').textContent = '✓ Terpilih';
-    selectedCard = card;
-
-    document.getElementById('selName').textContent = name;
-    document.getElementById('selectionBar').classList.add('visible');
-  }
 
   function bookNow() {
     const name = document.getElementById('selName').textContent;
