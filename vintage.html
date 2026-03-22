@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vintage Analog Photobooth</title>
+<title>FotoKita- Vintage Analog</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -202,7 +202,7 @@
 <body>
 
 <header>
-  <div class="subtitle">35mm Analog Series</div>
+  <div class="subtitle">FotoKita Analog Series</div>
   <h1>Vintage Moments</h1>
   <div class="divider"></div>
 </header>
@@ -210,7 +210,7 @@
 <div class="app-container">
   
   <div class="panel">
-    <h2>[ Viewfinder ]</h2>
+    <h2>[ Photobooth ]</h2>
     <div class="cam-status" id="camStatus">ROLL: 1 OF 3 EXPOSURES</div>
 
     <div class="video-wrapper">
@@ -240,16 +240,16 @@
     </div>
 
     <div class="setting-group">
-      <label>DEVELOPED NEGATIVES (UPLOAD)</label>
+      <label>Upload Manual</label>
       <div class="slot-grid" id="slotGrid"></div>
     </div>
   </div>
 
   <div class="panel">
-    <h2>[ Darkroom Print ]</h2>
+    <h2>[ Photo Results ]</h2>
 
     <div class="setting-group">
-      <label>PRINT FORMAT</label>
+      <label>Select Frame Format</label>
       <div class="layout-tabs">
         <div class="tab-btn active" onclick="setLayout(this, 'strip')">FILM STRIP</div>
         <div class="tab-btn" onclick="setLayout(this, 'landscape')">GRID PRINT</div>
@@ -262,7 +262,7 @@
       </div>
     </div>
 
-    <button class="btn-download" onclick="downloadStrip()">Develop & Save Photo</button>
+    <button class="btn-download" onclick="downloadStrip()">⬇ Download Photo</button>
   </div>
 
 </div>
@@ -464,7 +464,7 @@ function renderStrip() {
     ctx.font = "14px 'Courier Prime', monospace"; 
     ctx.letterSpacing = "6px"; 
     ctx.fillStyle = textC;
-    ctx.fillText("35MM ISO 400", W/2, HEAD_H/2 + 45);
+    ctx.fillText("FotoKita", W/2, HEAD_H/2 + 45);
 
     for (let i = 0; i < 3; i++) {
       const px = 30, py = HEAD_H + GAP + i*(P_H + GAP);
@@ -503,7 +503,7 @@ function renderStrip() {
     ctx.fillStyle = gold; ctx.font = "italic 22px 'Playfair Display', serif"; 
     ctx.fillText("Vintage Gold Edition", W/2, footerY + 60);
     ctx.font = "12px 'Courier Prime', monospace"; ctx.letterSpacing = "3px"; ctx.fillStyle = textC;
-    ctx.fillText("EST. 1998", W/2, footerY + 85);
+    ctx.fillText("EST. 2026", W/2, footerY + 85);
     
   } else {
     // FORMAT LANDSCAPE
@@ -557,11 +557,11 @@ function renderStrip() {
         ctx.font = "italic bold 42px 'Playfair Display', serif"; 
         ctx.fillText("Analog Moments", px + pW/2, py + pH/2 - 15);
         ctx.fillStyle = textC; ctx.font = "16px 'Courier Prime', monospace"; ctx.letterSpacing = "6px";
-        ctx.fillText("35MM ISO 400 FILM", px + pW/2, py + pH/2 + 25);
+        ctx.fillText("FotoKita", px + pW/2, py + pH/2 + 25);
         ctx.beginPath(); ctx.moveTo(px + pW/2 - 60, py + pH/2 + 55); ctx.lineTo(px + pW/2 + 60, py + pH/2 + 55); 
         ctx.strokeStyle = gold; ctx.lineWidth = 1; ctx.stroke();
         ctx.fillStyle = gold; ctx.font = "14px 'Courier Prime', monospace"; ctx.letterSpacing = "3px";
-        ctx.fillText("EST. 1998", px + pW/2, py + pH/2 + 85);
+        ctx.fillText("EST. 2026", px + pW/2, py + pH/2 + 85);
       }
     }
   }
