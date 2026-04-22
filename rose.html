@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FotoKita Photobooth</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --itoya-blue: #2c3695;
+    --itoya-pink: #ec008c;
+    --itoya-yellow: #fff200;
+    --itoya-white: #ffffff;
+    --bg-app: #f4f6f9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg-app);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 3rem;
+  }
+
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    width: 100%;
+  }
+
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    color: var(--itoya-blue);
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+  }
+
+  .app-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .panel {
+    background: white;
+    border: 3px solid var(--itoya-blue);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 8px 8px 0 rgba(44, 54, 149, 0.1);
+    flex: 1 1 400px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .panel h2 {
+    font-family: 'Fredoka One', cursive;
+    color: var(--itoya-blue);
+    font-size: 1.5rem;
+    text-align: center;
+    border-bottom: 3px dotted var(--itoya-blue);
+    padding-bottom: 0.5rem;
+  }
+
+  /* ===== KAMERA ===== */
+  .cam-status { text-align: center; color: var(--itoya-pink); font-weight: 700; }
+  
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 25px;
+    overflow: hidden;
+    border: 4px solid var(--itoya-blue);
+    background: #000;
+  }
+
+  #camera-video { width: 100%; height: 100%; object-fit: cover; }
+  
+  #countdown-display {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    font-size: 6rem; font-family: 'Fredoka One'; color: white; background: rgba(236, 0, 140, 0.6); z-index: 10;
+  }
+
+  .camera-controls { display: flex; gap: 0.7rem; flex-wrap: wrap; justify-content: center; }
+  .cam-btn { padding: 0.8rem 1.2rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.1s; font-family: 'Nunito', sans-serif;}
+  .cam-btn-snap { background: var(--itoya-blue); color: white; flex-grow: 1; font-size: 1.1rem; box-shadow: 0 5px 0 #1b2260; }
+  .cam-btn-snap:active { transform: translateY(5px); box-shadow: none; }
+  .cam-btn-snap:disabled { filter: grayscale(1); opacity: 0.6; }
+  .cam-btn-flip { background: var(--itoya-yellow); color: var(--itoya-blue); box-shadow: 0 5px 0 #d1c600; }
+  .cam-btn-flip:active { transform: translateY(5px); box-shadow: none; }
+  
+  /* GRID UPLOAD */
+  .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .slot-thumb-wrapper {
+    aspect-ratio: 4/3; border-radius: 15px; border: 3px dashed var(--itoya-blue);
+    position: relative; overflow: hidden; cursor: pointer; background: #fafafa;
+  }
+  .slot-thumb-wrapper.active { border-color: var(--itoya-pink); border-style: solid; }
+  .slot-thumb { width: 100%; height: 100%; object-fit: cover; }
+  .slot-overlay-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--itoya-blue); pointer-events: none; font-weight: 700;}
+  
+  input[type="file"], canvas { display: none; }
+
+  /* ===== PENGATURAN ===== */
+  .setting-group { margin-bottom: 0.5rem; }
+  .setting-group label { color: var(--itoya-blue); font-size: 0.85rem; display: block; text-align: center; margin-bottom: 0.5rem; font-weight: 800; text-transform: uppercase;}
+  
+  .tabs { display: flex; gap: 0.5rem; background: #e0e4eb; padding: 5px; border-radius: 12px; }
+  .tab-btn {
+    flex: 1; text-align: center; padding: 0.6rem; color: var(--itoya-blue); font-size: 0.85rem;
+    font-weight: 700; cursor: pointer; border-radius: 8px; transition: 0.2s; border: 2px solid transparent;
+  }
+  .tab-btn.active { background: white; border-color: var(--itoya-blue); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+  /* ===== PREVIEW AREA ===== */
+  .preview-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; padding: 10px 0;}
+  .strip-preview {
+    position: relative; border-radius: 0; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%; max-width: 300px; transition: max-width 0.3s ease;
+  }
+  .strip-preview.is-landscape { max-width: 100%; }
+  #preview-img { width: 100%; display: block; }
+
+  .btn-download {
+    width: 100%; padding: 1.2rem; background: var(--itoya-pink);
+    color: white; border: none; border-radius: 15px; font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem; letter-spacing: 1px; cursor: pointer; box-shadow: 0 6px 0 #b3006a; transition: 0.1s; margin-top: 10px;
+  }
+  .btn-download:active { transform: translateY(6px); box-shadow: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📸 FotoKita</h1>
+</header>
+
+<div class="app-container">
+  
+  <div class="panel">
+    <h2>Take Photo</h2>
+    <div class="cam-status" id="camStatus">Ambil Foto (1/3)</div>
+
+    <div class="video-wrapper">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <div id="countdown-display">3</div>
+    </div>
+    <canvas id="camera-canvas"></canvas>
+
+    <div class="camera-controls">
+      <button class="cam-btn cam-btn-flip" onclick="flipCamera()">🔄 Balik</button>
+      <button class="cam-btn cam-btn-snap" id="btnSnap" onclick="triggerSnap()">📸 Jepret (3s)</button>
+      <button class="cam-btn cam-btn-flip" id="btnReset" onclick="resetPhotos()" style="display:none; width:100%;">🔄 Ulangi Sesi</button>
+    </div>
+
+    <div class="setting-group" style="margin-top: 10px;">
+      <label>Atau Upload Manual:</label>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Photo Result</h2>
+
+    <div class="setting-group">
+      <label>Layout Frame</label>
+      <div class="tabs">
+        <div class="tab-btn active" onclick="setLayout(this, 'potret')">⬇️ Potret (Memanjang)</div>
+        <div class="tab-btn" onclick="setLayout(this, 'landscape')">➡️ Landscape (Menyamping)</div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <label>Tema Warna</label>
+      <div class="tabs">
+        <div class="tab-btn active" onclick="setTheme(this, 'whiteBlue')">⚪ FotoKita White</div>
+        <div class="tab-btn" onclick="setTheme(this, 'blueNeon')">🔵 FotoKita Blue Neon</div>
+      </div>
+    </div>
+
+    <div class="preview-wrapper">
+      <div class="strip-preview" id="previewContainer">
+        <img id="preview-img" src="">
+      </div>
+    </div>
+
+    <button class="btn-download" onclick="downloadStrip()">⬇️ Download Hasil ⬇️</button>
+  </div>
+
+</div>
+
+<canvas id="strip-canvas"></canvas>
+
+<input type="file" id="file0" accept="image/*" onchange="loadPhoto(0,this)">
+<input type="file" id="file1" accept="image/*" onchange="loadPhoto(1,this)">
+<input type="file" id="file2" accept="image/*" onchange="loadPhoto(2,this)">
+
+<script>
+let photos = [null, null, null];
+let currentTheme = 'whiteBlue';
+let currentLayout = 'potret'; // potret / landscape
+let cameraStream = null;
+let currentSlot = 0; 
+let facingMode = 'user';
+let isSnapping = false;
+
+window.onload = () => { buildSlots(); renderFrame(); startStream(); updateUI(); };
+document.fonts.ready.then(() => { renderFrame(); });
+
+async function startStream() {
+  if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+  const video = document.getElementById('camera-video');
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+    });
+    video.srcObject = cameraStream;
+  } catch (e) { console.log("Gunakan upload manual jika kamera tidak ada."); }
+}
+
+function flipCamera() { facingMode = facingMode === 'user' ? 'environment' : 'user'; startStream(); }
+
+function setLayout(el, layout) {
+  document.querySelectorAll('.tabs')[0].querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active'); currentLayout = layout;
+  document.getElementById('previewContainer').className = layout === 'landscape' ? 'strip-preview is-landscape' : 'strip-preview';
+  renderFrame();
+}
+
+function setTheme(el, theme) {
+  document.querySelectorAll('.tabs')[1].querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active'); currentTheme = theme; renderFrame();
+}
+
+function triggerSnap() {
+  if(isSnapping || currentSlot >= 3) return;
+  const btnSnap = document.getElementById('btnSnap');
+  isSnapping = true; btnSnap.disabled = true;
+  let t = 3; 
+  let display = document.getElementById('countdown-display');
+  display.style.display = 'flex'; display.innerText = t;
+  
+  let interval = setInterval(() => {
+    t--;
+    if (t > 0) { display.innerText = t; } 
+    else {
+      clearInterval(interval); display.style.display = 'none';
+      executeSnap(); isSnapping = false; btnSnap.disabled = false;
+    }
+  }, 1000);
+}
+
+function executeSnap() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  canvas.width = 800; canvas.height = 600; // Landscape 4:3
+  const ctx = canvas.getContext('2d');
+  
+  const vRatio = video.videoWidth / video.videoHeight, cRatio = canvas.width / canvas.height;
+  let sx = 0, sy = 0, sW = video.videoWidth, sH = video.videoHeight;
+  if (vRatio > cRatio) { sW = video.videoHeight * cRatio; sx = (video.videoWidth - sW) / 2; } 
+  else { sH = video.videoWidth / cRatio; sy = (video.videoHeight - sH) / 2; }
+
+  ctx.drawImage(video, sx, sy, sW, sH, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  
+  const img = new Image();
+  img.onload = () => { photos[currentSlot] = img; document.getElementById(`thumb${currentSlot}`).src = dataUrl; renderFrame(); currentSlot++; updateUI(); };
+  img.src = dataUrl;
+}
+
+function resetPhotos() {
+  photos = [null, null, null]; currentSlot = 0;
+  for(let i=0; i<3; i++) document.getElementById(`thumb${i}`).src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  updateUI(); renderFrame();
+}
+
+function updateUI() {
+  document.querySelectorAll('.slot-thumb-wrapper').forEach((el, index) => {
+    if(index === currentSlot) el.classList.add('active'); else el.classList.remove('active');
+  });
+  const btnSnap = document.getElementById('btnSnap'), btnReset = document.getElementById('btnReset');
+  if (currentSlot >= 3) {
+    document.getElementById('camStatus').textContent = "🎉 Selesai!";
+    btnSnap.style.display = 'none'; btnReset.style.display = 'block';
+  } else {
+    document.getElementById('camStatus').textContent = `Ambil Foto (${currentSlot + 1}/3)`;
+    btnSnap.style.display = 'block'; btnReset.style.display = 'none'; btnSnap.disabled = false;
+  }
+}
+
+function buildSlots() {
+  const grid = document.getElementById('slotGrid'); grid.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const div = document.createElement('div'); div.className = 'slot-thumb-wrapper';
+    if(i === 0) div.classList.add('active');
+    div.onclick = () => document.getElementById(`file${i}`).click();
+    div.innerHTML = `<img class="slot-thumb" id="thumb${i}" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div class="slot-overlay-text">Slot ${i+1}</div>`;
+    grid.appendChild(div);
+  }
+}
+
+function loadPhoto(index, input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      photos[index] = img; document.getElementById(`thumb${index}`).src = e.target.result; renderFrame();
+      if(index === currentSlot && currentSlot < 3) { currentSlot++; updateUI(); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ==========================================================
+// RENDER CANVAS DENGAN GARIS BERGELOMBANG (WAVY)
+// ==========================================================
+function renderFrame() {
+  const canvas = document.getElementById('strip-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const isPotret = currentLayout === 'potret';
+  const W = isPotret ? 600 : 1600;
+  const H = isPotret ? 1700 : 800;
+  canvas.width = W; canvas.height = H;
+  
+  // Setup Warna Tema
+  const colors = {
+    whiteBlue: { bg: '#ffffff', text1: '#2c3695', text2: '#2c3695', waves: ['#2c3695','#2c3695','#2c3695'], doodle: '#2c3695' },
+    blueNeon: { bg: '#2c3695', text1: '#fff200', text2: '#ec008c', waves: ['#ec008c','#fff200','#ec008c'], doodle: '#fff200' }
+  };
+  const t = colors[currentTheme];
+
+  // Background
+  ctx.fillStyle = t.bg; 
+  ctx.fillRect(0, 0, W, H);
+
+  // FUNGSI GARIS BERGELOMBANG MENGELILINGI KOTAK
+  function drawWavyRect(x, y, w, h, waveColor) {
+    const waveLength = 20; // Kerapatan gelombang
+    const amplitude = 8;   // Tinggi gelombang
+    
+    ctx.beginPath();
+    ctx.strokeStyle = waveColor;
+    ctx.lineWidth = 6;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    
+    // Top Edge
+    for (let i = 0; i <= w; i += 2) {
+        ctx.lineTo(x + i, y - Math.sin((i / waveLength) * Math.PI * 2) * amplitude);
+    }
+    // Right Edge
+    for (let i = 0; i <= h; i += 2) {
+        ctx.lineTo(x + w + Math.sin((i / waveLength) * Math.PI * 2) * amplitude, y + i);
+    }
+    // Bottom Edge
+    for (let i = 0; i <= w; i += 2) {
+        ctx.lineTo(x + w - i, y + h + Math.sin((i / waveLength) * Math.PI * 2) * amplitude);
+    }
+    // Left Edge
+    for (let i = 0; i <= h; i += 2) {
+        ctx.lineTo(x - Math.sin((i / waveLength) * Math.PI * 2) * amplitude, y + h - i);
+    }
+    
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  // FUNGSI GAMBAR BUNGA DOODLE
+  function drawFlower(fx, fy, scale) {
+    ctx.save();
+    ctx.translate(fx, fy);
+    ctx.scale(scale, scale);
+    ctx.strokeStyle = t.doodle;
+    ctx.lineWidth = 3;
+    
+    for(let i=0; i<5; i++) {
+        ctx.beginPath();
+        ctx.rotate((Math.PI * 2) / 5);
+        ctx.ellipse(0, -12, 6, 12, 0, 0, Math.PI*2);
+        ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI*2); ctx.stroke(); // Tengah bunga
+    ctx.restore();
+  }
+
+  // DRAW PHOTOS & WAVY FRAMES
+  const pW = 460, pH = 345; // Rasio 4:3
+  
+  for (let i = 0; i < 3; i++) {
+    // Tentukan Posisi X & Y berdasarkan Layout
+    let px = isPotret ? (W - pW)/2 : 60 + i*(pW + 40);
+    let py = isPotret ? 200 + i*(pH + 60) : 220;
+    
+    // 1. Gambar Garis Bergelombang di Luar Foto
+    drawWavyRect(px - 20, py - 20, pW + 40, pH + 40, t.waves[i]);
+
+    // 2. Potong area melengkung (rounded) untuk foto
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(px, py, pW, pH, 30); ctx.clip();
+    
+    if(photos[i]){
+      const scale = Math.max(pW/photos[i].width, pH/photos[i].height);
+      const sw = photos[i].width*scale, sh = photos[i].height*scale;
+      ctx.drawImage(photos[i], px-(sw-pW)/2, py-(sh-pH)/2, sw, sh); 
+    } else {
+      ctx.fillStyle = "#e0e4eb"; ctx.fillRect(px, py, pW, pH);
+      ctx.fillStyle = t.text1; ctx.font = "bold 24px Arial"; ctx.textAlign="center"; ctx.fillText(`Photo ${i+1}`, px+pW/2, py+pH/2);
+    }
+    ctx.restore();
+  }
+
+  // DRAW TEKS HEADER & FOOTER
+  ctx.textAlign = 'center';
+  ctx.font = "60px 'Fredoka One', cursive";
+  
+  if(isPotret) {
+    // Teks Header (FotoKita)
+    ctx.fillStyle = t.text1;
+    ctx.fillText("FotoKita", W/2, 120);
+    
+    // Teks Footer (Love Yourself)
+    ctx.fillText("SATGAS", W/2, 1530);
+    ctx.fillStyle = t.text2;
+    ctx.fillText("UTBK 2026", W/2, 1610);
+
+    // Draw Flowers (Potret)
+    drawFlower(70, 80, 1.2); drawFlower(530, 120, 1.2);
+    drawFlower(80, 1430, 1.2); drawFlower(520, 1450, 1.2);
+
+  } else {
+    // Layout Landscape - Teks di Atas
+    ctx.fillStyle = t.text1;
+    ctx.font = "70px 'Fredoka One', cursive";
+    ctx.fillText("FotoKita", W/2, 90);
+    
+    // FOOTER
+ctx.font = "70px 'Fredoka One', cursive";
+
+if(currentTheme === 'blueNeon') {
+    ctx.fillStyle = t.text1; 
+    ctx.fillText("SATGAS", W/2 - 160, H - 60);
+
+    ctx.fillStyle = t.text2; 
+    ctx.fillText("UTBK 2026", W/2 + 130, H - 60);
+} else {
+    ctx.fillStyle = t.text1; 
+    ctx.fillText("SATGAS UTBK 2026", W/2, H - 60);
+}
+    // Draw Flowers (Landscape)
+    drawFlower(90, 90, 1.5); drawFlower(1500, 120, 1.5);
+  }
+
+  // Update Preview UI
+  document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.9);
+}
+
+function downloadStrip() {
+  const link = document.createElement('a');
+  link.download = `FotoKita_${currentLayout}_${currentTheme}.jpg`;
+  link.href = document.getElementById('strip-canvas').toDataURL('image/jpeg', 1.0);
+  link.click();
+}
+</script>
+</body>
+</html>
